@@ -1,0 +1,78 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# author : Pramode P
+#
+# Pospose : Vagrant script provisions a kubernetes cluster with 1 master node and 2 worker nodes
+#
+# Using yaml to load external configuration files
+require 'yaml'
+
+$install_docker = <<-SCRIPT
+echo "--- Installing Docker"
+echo " "
+SCRIPT
+
+$install_kubeadm = <<-SCRIPT
+echo "--- Installing Kubeadm"
+SCRIPT
+
+$check_config = <<-SCRIPT
+echo "--- Checking Info"
+SCRIPT
+
+$init_master = <<-SCRIPT
+# if [[ ! $(hostname -f) = master* ]] then return fi ;
+echo "--- Init Master Node"
+SCRIPT
+
+$post_master = <<-SCRIPT
+# if [[ ! $(hostname -f) = master* ]] then return fi ;
+echo "--- Setup kubectl"
+SCRIPT
+
+$init_worker = <<-SCRIPT
+# if [[ ! $(hostname -f) = worker* ]] then return fi ;
+echo "--- Join Worker Node"
+SCRIPT
+
+
+Vagrant.configure("2") do |config|
+  # Using the hostmanager vagrant plugin to update the host files
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+  
+  # Loading in the VM configuration information
+  servers = YAML.load_file('servers.yaml')
+  
+  servers.each do |servers| 
+    config.vm.define servers["name"] do |srv|
+      srv.vm.box = servers["box"] # Speciy the name of the Vagrant box file to use
+      srv.vm.hostname = servers["name"] # Set the hostname of the VM
+      srv.vm.network "private_network", ip: servers["ip"], :adapater=>2 # Add a second adapater with a specified IP
+    # srv.vm.network :forwarded_port, guest: 22, host: servers["port"] # Add a port forwarding rule
+
+      srv.vm.provider "virtualbox" do |vb|
+        vb.name = servers["name"] # Name of the VM in VirtualBox
+        vb.cpus = servers["cpus"] # How many CPUs to allocate to the VM
+        vb.memory = servers["ram"] # How much memory to allocate to the VM
+    #   vb.customize ["modifyvm", :id, "--cpuexecutioncap", "10"]  # Limit to VM to 10% of available 
+      end
+	  
+	  srv.vm.provision "shell", inline: $install_docker
+      srv.vm.provision "shell", inline: $install_kubeadm
+	  srv.vm.provision "shell", inline: $check_config
+	  
+	  if servers["name"].include? "master" then
+		srv.vm.provision "shell", inline: $init_master
+		srv.vm.provision "shell", inline: $post_master		
+	  end
+	  
+	  if servers["name"].include? "worker" then
+		srv.vm.provision "shell", inline: $init_worker
+      end
+	end
+  end
+end
