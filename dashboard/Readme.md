@@ -31,8 +31,10 @@ Now you should have full cluster access
 To access the dashboard across network , update dashboard service to NodePort
 
 $ kubect edit svc kubernetes-dashboard -n kubernetes-dashboard
-Change ClusterIP to NodePort
-:wq to save
+
+	Change ClusterIP to NodePort
+
+	:wq to save
 
 $ kubect get svc -n kubernetes-dashboard
 
