@@ -9,31 +9,85 @@
 require 'yaml'
 
 $install_docker = <<-SCRIPT
-echo "--- Installing Docker"
-echo " "
+echo "--- Installing Docker ce version 17.x "
+sudo apt update && sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$( . /etc/os-release ; echo "$ID") $(lsb_release -cs) stable"
+sudo apt-get update
+sudo apt-get install -y docker-ce=$(apt-cache madison docker-ce | grep 17. | grep  ubuntu-xenial | head -1 | awk '{print $3}')
+
+sudo tee -a /etc/docker/daemon.json  << EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+sudo systemctl restart docker
 SCRIPT
 
 $install_kubeadm = <<-SCRIPT
-echo "--- Installing Kubeadm"
+echo "--- Installing Kubeadm and kubelet - version 1.17.0"
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+sudo apt-get update
+echo "installing version `curl -s https://packages.cloud.google.com/apt/dists/kubernetes-xenial/main/binary-amd64/Packages | grep Version | grep 1.17 | awk '{print $2}'`"
+sudo apt-get install kubeadm=1.17.0-00 kubelet=1.17.0-00  kubectl=1.17.0-00 -y
 SCRIPT
+
 
 $check_config = <<-SCRIPT
 echo "--- Checking Info"
+echo "docker  version `docker version`"
+echo "kubelet version `kubelet --version`"
+echo "kubeadm version `kubeadm version`"
+echo "IPADDR_ENP0S8 `ifconfig enp0s8 | grep Mask | awk '{print $2}'| cut -f2 -d:`"
+echo "IPADDR_ENP0S3 `ifconfig enp0s3 | grep Mask | awk '{print $2}'| cut -f2 -d:`"
+echo "hostname `hostname -f`"
+echo "`ip -o -4 addr list`"
 SCRIPT
+
 
 $init_master = <<-SCRIPT
-# if [[ ! $(hostname -f) = master* ]] then return fi ;
 echo "--- Init Master Node"
+sudo swapoff -a
+sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab
+echo "Environment=\"cgroup-driver=systemd\"" | sudo tee -a /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sudo sed -i '/ip6/s/^/#/' /etc/hosts
+# You may require to rum below command to ufw to allow pos to pod inter communication
+# sudo ufw allow in on cni0 && sudo ufw allow out on cni0
+# sudo ufw default allow routed
+sudo kubeadm config images pull
+HOST_NAME=$(hostname -f)
+IPADDR_ENP0S8=$(ifconfig enp0s8 | grep Mask | awk '{print $2}'| cut -f2 -d:)
+sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8 --apiserver-cert-extra-sans=$IPADDR_ENP0S8  --node-name $(hostname -s)  --pod-network-cidr 10.10.0.0/16 --service-cidr  10.150.0.0/16  2>&1 | tee /vagrant/init_master.log
+sudo kubeadm token create --print-join-command > /vagrant/kubeadm_join_cmd.sh
+sudo chmod +x /vagrant/kubeadm_join_cmd.sh
 SCRIPT
+
 
 $post_master = <<-SCRIPT
-# if [[ ! $(hostname -f) = master* ]] then return fi ;
-echo "--- Setup kubectl"
+echo "--- Setup kubectl and apply container networking interface"
+mkdir ~/.kube/
+sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
+sudo chown vagrant:vagrant ~/.kube/config
+echo "Implement Calico for Kubernetes Networking https://docs.projectcalico.org/v3.11/getting-started/kubernetes/ "
+kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml
+while [ $(kubectl get pods --all-namespaces | grep dns | grep Running | wc -l) != 2 ] ; do sleep 10 ; echo "Waiting coredns pods to be up ... " ; done
+while [ $(kubectl get nodes | grep master | grep Ready | wc -l) != 1 ] ; do sleep 20 ; echo "Waiting node to be ready ... " ; done
+echo "matser node is Ready"
+echo "`kubectl get nodes`"
 SCRIPT
 
+
 $init_worker = <<-SCRIPT
-# if [[ ! $(hostname -f) = worker* ]] then return fi ;
 echo "--- Join Worker Node"
+sudo sh /vagrant/kubeadm_join_cmd.sh
 SCRIPT
 
 
