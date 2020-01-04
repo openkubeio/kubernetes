@@ -88,6 +88,8 @@ SCRIPT
 $init_worker = <<-SCRIPT
 echo "--- Join Worker Node"
 sudo sh /vagrant/kubeadm_join_cmd.sh
+#kubectl label node worker01 node-role.kubernetes.io/worker=worker
+#kubectl label node worker02 node-role.kubernetes.io/worker=worker
 SCRIPT
 
 
