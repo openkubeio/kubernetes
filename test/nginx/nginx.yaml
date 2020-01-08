@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-dv
+  namespace: dev
+  labels: 
+    k8s-app: nginx-dv
+spec:
+  replicas: 1
+  selector: 
+    matchLabels: 
+      k8s-app: nginx-dv
+  template: 
+    metadata: 
+      labels: 
+        k8s-app: nginx-dv
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+#       imagePullSecrets:
+#     - name: dev-registrykey
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-dv
+  namespace: dev
+  labels:
+    k8s-app: nginx-dv
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    k8s-app: nginx-dv
+  type: NodePort
