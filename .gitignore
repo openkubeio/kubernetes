@@ -4,4 +4,5 @@ cluster/.vagrant
 ingress-controller-nginx/.vagrant
 ingress-controller-nginx/*.log
 
-gitinstruction.txt
+git*
+
