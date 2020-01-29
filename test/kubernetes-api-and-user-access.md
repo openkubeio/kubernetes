@@ -28,8 +28,7 @@ Quick test with your conig file
 
 
 
-===================================================
-Creating a user namespace and access via user token
+====Creating a user namespace and access via user token
 
 	$ NAMESPACE=default
 
