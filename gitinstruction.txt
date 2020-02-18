@@ -6,6 +6,8 @@ git add .
 git commit -m "ok"
 git remote add origin https://github.com/pramode2009/kubernetes.git
 git remote -v
+git add .
+git commit -m "ok"
 git push origin master
 
 
