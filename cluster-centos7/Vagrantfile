@@ -1,0 +1,210 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# author : Pramode P
+#
+# Pospose : Vagrant script provisions a kubernetes cluster with 1 master node and 2 worker nodes
+#
+# Using yaml to load external configuration files
+require 'yaml'
+require 'fileutils'
+
+$install_docker = <<-SCRIPT
+echo "--- Installing Docker ce version 17.x "
+sudo yum update -y
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+sudo yum install -y ca-certificates curl net-tools
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum list docker-ce.x86_64 --showduplicates | sort -r | grep 19.
+sudo yum install -y docker-ce-19.03.0
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo docker version
+sudo tee  /etc/docker/daemon.json  << EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+sudo systemctl restart docker
+sudo docker version
+SCRIPT
+
+$install_kubeadm = <<-SCRIPT
+echo "--- Installing Kubeadm and kubelet - version 1.17.0"
+sudo tee /etc/yum.repos.d/kubernetes.repo <<  EOF
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+echo "installing version `curl -s https://packages.cloud.google.com/apt/dists/kubernetes-xenial/main/binary-amd64/Packages | grep Version | grep 1.17 | awk '{print $2}'`"
+#sudo yum install -y kubelet kubeadm kubectl
+sudo yum install -y kubeadm-1.17.3 kubelet-1.17.3  kubectl-1.17.3
+sudo systemctl enable kubelet
+SCRIPT
+
+
+$check_config = <<-SCRIPT
+echo "--- Checking Info"
+echo "HOME=$HOME"
+echo "user=`whoami`"
+echo "docker  version `docker version`"
+echo "kubelet version `kubelet --version`"
+echo "kubeadm version `kubeadm version`"
+echo "IPADDR_ENP0S8 `ifconfig eth1 | grep inet | grep broadcast | awk '{print $2}'`"
+echo "hostname `hostname -f`"
+SCRIPT
+
+
+$init_master = <<-SCRIPT
+echo "--- Init Master Node"
+sudo swapoff -a
+sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab
+sudo sed -i "s/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+echo "Environment=\"cgroup-driver=systemd\"" | sudo tee -a /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+sudo sed -i '/ip6/s/^/#/' /etc/hosts
+modprobe br_netfilter
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+# You may require to rum below command to ufw to allow pos to pod inter communication
+#sudo firewall-cmd --permanent --add-port=6443/tcp
+#sudo firewall-cmd --permanent --add-port=2379-2380/tcp
+#sudo firewall-cmd --permanent --add-port=10250/tcp
+#sudo firewall-cmd --permanent --add-port=10251/tcp
+#sudo firewall-cmd --permanent --add-port=10252/tcp
+#sudo firewall-cmd --permanent --add-port=10255/tcp
+#sudo firewall-cmd –-reload
+sudo kubeadm config images pull
+HOST_NAME=$(hostname -f)
+sudo mkdir -p /data/cluster-centos7/
+IPADDR_ENP0S8=$(ifconfig eth1 | grep inet | grep broadcast | awk '{print $2}')
+sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8 --apiserver-cert-extra-sans=$IPADDR_ENP0S8  --node-name $(hostname -f)  --pod-network-cidr 10.10.0.0/16 --service-cidr  10.150.0.0/16  2>&1 | tee /data/cluster-centos7/init_master.log
+sudo kubeadm token create --print-join-command > /data/cluster-centos7/kubeadm_join_cmd.sh
+sudo chmod +x /data/cluster-centos7/kubeadm_join_cmd.sh
+SCRIPT
+
+
+$post_master = <<-SCRIPT
+echo "--- Setup kubectl and apply container networking interface"
+mkdir ~/.kube/
+sudo cp /etc/kubernetes/admin.conf ~/.kube/config
+sudo chown vagrant:vagrant ~/.kube/config
+echo "Implement Calico for Kubernetes Networking https://docs.projectcalico.org/v3.11/getting-started/kubernetes/ "
+kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml
+while [ $(kubectl get pods --all-namespaces | grep dns | grep Running | wc -l) != 2 ] ; do sleep 20 ; echo "Waiting coredns pods to be up.... " ; done
+while [ $(kubectl get nodes | grep master | grep Ready | wc -l) != 1 ] ; do sleep 20 ; echo "Waiting node to be ready0... " ; done
+echo "matser node is Ready"
+echo "`kubectl get nodes`"
+sudo cp /etc/kubernetes/admin.conf /data/cluster-centos7/config
+SCRIPT
+
+
+$init_worker = <<-SCRIPT
+echo "--- Join Worker Node"
+sudo swapoff -a
+sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab
+sudo sed -i "s/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+modprobe br_netfilter
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+sudo sh /data/cluster-centos7/kubeadm_join_cmd.sh
+#kubectl label node $(hostname -s) node-role.kubernetes.io/worker=worker
+#kubectl label node worker1 node-role.kubernetes.io/worker=worker
+#kubectl label node worker2 node-role.kubernetes.io/worker=worker
+SCRIPT
+
+$init_proxy = <<-SCRIPT
+echo "--- Join Worker Node"
+sudo yum update -y
+sudo yum install -y yum-utils 
+sudo yum install -y ca-certificates curl net-tools
+sudo yum install -y haproxy
+sudo systemctl enable haproxy
+sudo tee -a /etc/haproxy/haproxy.cfg << EOF
+#### Config of Ingress Traffic to Kubernetes
+
+frontend localhost
+    bind *:80
+    bind *:443
+    option tcplog
+    mode tcp
+    default_backend nodes	
+
+backend nodes
+    mode tcp
+    balance roundrobin
+    option ssl-hello-chk
+    server node01 192.168.205.41:30301 check
+    server node02 192.168.205.42:30301 check	
+
+####END of Config
+EOF
+haproxy -f /etc/haproxy/haproxy.cfg -c -V
+sudo systemctl start haproxy
+sleep 5
+sudo systemctl status haproxy
+SCRIPT
+
+
+Vagrant.configure("2") do |config|
+  # Using the hostmanager vagrant plugin to update the host files
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+  
+  # Create a data dir to mount with in the VM information
+  dirname = File.dirname("./../data/cluster-centos7/")
+  unless File.directory?(dirname)
+  FileUtils.mkdir_p(dirname)
+  end
+  
+  # Loading in the VM configuration information
+  servers = YAML.load_file('servers.yaml')
+  
+  servers.each do |servers| 
+    config.vm.define servers["name"] do |srv|
+      srv.vm.box = servers["box"] # Speciy the name of the Vagrant box file to use
+      srv.vm.hostname = servers["name"] # Set the hostname of the VM
+#     Add a second adapater with a specified IP
+      srv.vm.network "private_network", ip: servers["ip"], :adapater=>2 
+#	  srv.vm.network :forwarded_port, guest: 22, host: servers["port"] # Add a port forwarding rule
+      srv.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+	  srv.vm.synced_folder "./../data/" , "/data", type: "virtualbox", owner: "root", group: "root"
+	  
+      srv.vm.provider "virtualbox" do |vb|
+        vb.name = servers["name"] # Name of the VM in VirtualBox
+        vb.cpus = servers["cpus"] # How many CPUs to allocate to the VM
+        vb.memory = servers["memory"] # How much memory to allocate to the VM
+#       vb.customize ["modifyvm", :id, "--cpuexecutioncap", "10"] # Limit to VM to 10% of available 
+      end
+	  
+	  
+	  if servers["name"].include? "master" then
+		srv.vm.provision "shell", inline: $install_docker
+        srv.vm.provision "shell", inline: $install_kubeadm
+	    srv.vm.provision "shell", inline: $check_config
+		srv.vm.provision "shell", inline: $init_master
+		srv.vm.provision "shell", inline: $post_master		
+	  end
+	  
+	  if servers["name"].include? "worker" then
+	    srv.vm.provision "shell", inline: $install_docker
+        srv.vm.provision "shell", inline: $install_kubeadm
+	    srv.vm.provision "shell", inline: $check_config
+		srv.vm.provision "shell", inline: $init_worker
+     end
+	 
+	 if servers["name"].include? "proxy" then
+	    srv.vm.provision "shell", inline: $init_proxy
+     end
+	 
+	end
+  end
+end

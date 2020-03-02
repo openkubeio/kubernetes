@@ -1,8 +1,5 @@
-cluster/*.log
-cluster/.vagrant
-
-ingress-controller-nginx/.vagrant
-ingress-controller-nginx/*.log
-
-git*
+**/*.log
+**/.vagrant
+data/
+instruction.txt
 
