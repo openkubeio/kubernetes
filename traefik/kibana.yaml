@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitor
+---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: monitor
+  name: kibana-deployment
+  labels:
+    app: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: kibana:7.5.1
+        ports:
+        - containerPort: 5601
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kibana-service
+  namespace: monitor
+spec:
+  selector:
+    app: kibana
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 5601
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  namespace: monitor
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  tls:
+  - hosts:
+    - kibana.traefik.io
+    secretName: kibana-tls 
+  rules:
+  - host: kibana.traefik.mycluster.net
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kibana-service
+          servicePort: 80

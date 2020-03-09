@@ -1,0 +1,19 @@
+---
+- name: master.dv.kube.io
+  box: ubuntu/xenial64
+  cpus: 2
+  memory: 2048
+  ip: 192.168.205.10
+  port: 10122
+- name: worker1.dv.kube.io
+  box: ubuntu/xenial64
+  cpus: 1
+  memory: 1024
+  ip: 192.168.205.11
+  port: 10222
+- name: worker2.dv.kube.io
+  box: ubuntu/xenial64
+  cpus: 1
+  memory: 1024
+  ip: 192.168.205.12
+  port: 10122

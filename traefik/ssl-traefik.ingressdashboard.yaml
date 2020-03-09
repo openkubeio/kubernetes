@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: traefik
+    chart: traefik-1.86.1
+    release: ssl-traefik
+  name: ssl-traefik-dashboard
+  namespace: traefik-ingress
+spec:
+  rules:
+  - host: dashboard.traefik.mycluster.net
+    http:
+      paths:
+      - backend:
+          serviceName: ssl-traefik-dashboard
+          servicePort: dashboard-http

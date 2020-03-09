@@ -1,0 +1,32 @@
+---
+- name: master1.etc.kube.io
+  box: centos/7
+  cpus: 2
+  memory: 2048
+  ip: 192.168.205.51
+  port: 10122
+- name: master2.etc.kube.io
+  box: centos/7
+  cpus: 1
+  memory: 1024
+  ip: 192.168.205.52
+  port: 10122
+- name: master3.etc.kube.io
+  box: centos/7
+  cpus: 1
+  memory: 1024
+  ip: 192.168.205.53
+  port: 10122
+- name: proxy.etc.kube.io
+  box: centos/7
+  cpus: 1
+  memory: 1024
+  ip: 192.168.205.54
+  port: 10122
+- name: workera.etc.kube.io
+  box: centos/7
+  cpus: 1
+  memory: 1024
+  ip: 192.168.205.55
+  port: 10122
+

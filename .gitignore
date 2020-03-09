@@ -2,4 +2,4 @@
 **/.vagrant
 data/
 instruction.txt
-
+**/certs/

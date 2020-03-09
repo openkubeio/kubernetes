@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: traefik
+    chart: traefik-1.86.1
+    release: ssl-traefik
+  name: ssl-traefik
+  namespace: traefik-ingress
+spec:
+  clusterIP: 10.150.54.87
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: https
+    nodePort: 32524
+    port: 443
+    protocol: TCP
+    targetPort: https
+  - name: http
+    nodePort: 31626
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: traefik
+    release: ssl-traefik
+  sessionAffinity: None
+  type: LoadBalancer
