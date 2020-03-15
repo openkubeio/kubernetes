@@ -15,10 +15,10 @@
   box: centos/7
   cpus: 1
   memory: 1024
-  ip: 192.168.205.42
+  ip: 192.168.205.43
   port: 10122
 - name: proxy.qa.kube.io
-  box: centos/7
+  box: ubuntu/xenial64
   cpus: 1
   memory: 1024
   ip: 192.168.205.44 

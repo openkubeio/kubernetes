@@ -68,7 +68,7 @@ $init_master = <<-SCRIPT
 echo "--- Init Master Node"
 sudo swapoff -a
 sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab
-sudo sed -i "s/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 echo "Environment=\"cgroup-driver=systemd\"" | sudo tee -a /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 sudo sed -i '/ip6/s/^/#/' /etc/hosts
 modprobe br_netfilter
@@ -93,13 +93,13 @@ SCRIPT
 
 $post_master = <<-SCRIPT
 echo "--- Setup kubectl and apply container networking interface"
-mkdir ~/.kube/
-sudo cp /etc/kubernetes/admin.conf ~/.kube/config
-sudo chown vagrant:vagrant ~/.kube/config
+sudo mkdir /home/vagrant/.kube/
+sudo cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+sudo chown vagrant:vagrant /home/vagrant/.kube/config
 echo "Implement Calico for Kubernetes Networking https://docs.projectcalico.org/v3.11/getting-started/kubernetes/ "
 kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml
 while [ $(kubectl get pods --all-namespaces | grep dns | grep Running | wc -l) != 2 ] ; do sleep 20 ; echo "Waiting coredns pods to be up.... " ; done
-while [ $(kubectl get nodes | grep master | grep Ready | wc -l) != 1 ] ; do sleep 20 ; echo "Waiting node to be ready0... " ; done
+while [ $(kubectl get nodes | grep master | grep Ready | wc -l) != 1 ] ; do sleep 20 ; echo "Waiting node to be ready... " ; done
 echo "matser node is Ready"
 echo "`kubectl get nodes`"
 sudo cp /etc/kubernetes/admin.conf /data/cluster-centos7/config
@@ -110,45 +110,40 @@ $init_worker = <<-SCRIPT
 echo "--- Join Worker Node"
 sudo swapoff -a
 sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab
-sudo sed -i "s/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+echo "Environment=\"cgroup-driver=systemd\"" | sudo tee -a /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 modprobe br_netfilter
 echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 sudo sh /data/cluster-centos7/kubeadm_join_cmd.sh
-#kubectl label node $(hostname -s) node-role.kubernetes.io/worker=worker
-#kubectl label node worker1 node-role.kubernetes.io/worker=worker
-#kubectl label node worker2 node-role.kubernetes.io/worker=worker
 SCRIPT
 
 $init_proxy = <<-SCRIPT
-echo "--- Join Worker Node"
-sudo yum update -y
-sudo yum install -y yum-utils 
-sudo yum install -y ca-certificates curl net-tools
-sudo yum install -y haproxy
+echo "--- Init Proxy Node"
+sudo apt update && sudo apt-get update
+sudo apt-get install -y haproxy
 sudo systemctl enable haproxy
 sudo tee -a /etc/haproxy/haproxy.cfg << EOF
 #### Config of Ingress Traffic to Kubernetes
 
 frontend localhost
-    bind *:80
-    bind *:443
+	bind *:80
+	bind *:443
     option tcplog
     mode tcp
-    default_backend nodes	
-
+    default_backend nodes
 backend nodes
-    mode tcp
-    balance roundrobin
-    option ssl-hello-chk
-    server node01 192.168.205.41:30301 check
-    server node02 192.168.205.42:30301 check	
+   mode tcp
+   balance roundrobin
+   option ssl-hello-chk
+   server node01 192.168.205.42:30001 check
+   server node02 192.168.205.43:30001 check
 
 ####END of Config
 EOF
 haproxy -f /etc/haproxy/haproxy.cfg -c -V
-sudo systemctl start haproxy
+sudo systemctl stop haproxy
 sleep 5
-sudo systemctl status haproxy
+sudo systemctl start haproxy
 SCRIPT
 
 
@@ -160,7 +155,7 @@ Vagrant.configure("2") do |config|
   config.hostmanager.ignore_private_ip = false
   
   # Create a data dir to mount with in the VM information
-  dirname = File.dirname("./../data/cluster-centos7/")
+  dirname = File.dirname("./../data/")
   unless File.directory?(dirname)
   FileUtils.mkdir_p(dirname)
   end

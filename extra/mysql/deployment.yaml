@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  labels:
+    app: my-release-mysql
+    chart: mysql-1.6.2
+  name: my-release-mysql
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-release-mysql
+      chart: mysql-1.6.2
+  template:
+    metadata:
+      labels:
+        app: my-release-mysql
+        chart: mysql-1.6.2
+    spec:
+      containers:
+      - image: mysql:5.7.28
+        imagePullPolicy: IfNotPresent
+        name: my-release-mysql
+        ports:
+        - containerPort: 3306
+          name: mysql
+          protocol: TCP
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mysql-root-password
+              name: my-release-mysql
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mysql-password
+              name: my-release-mysql
+        - name: MYSQL_USER
+          value: my-user
+        - name: MYSQL_DATABASE
+          value: my-database
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}
+          failureThreshold: 3
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: data
+      serviceAccount: default
+      serviceAccountName: default
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: my-release-mysql
+
+

@@ -1,4 +1,4 @@
-To install traeik inress controller
+To install traeik inress controller using helm chart
 
 	oficial : https://docs.traefik.io/v1.3/user-guide/kubernetes/
 	Helm    : https://github.com/helm/charts/tree/master/stable/traefik

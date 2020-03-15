@@ -8,16 +8,15 @@ metadata:
   name: ssl-traefik
   namespace: traefik-ingress
 spec:
-  clusterIP: 10.150.54.87
   externalTrafficPolicy: Cluster
   ports:
   - name: https
-    nodePort: 32524
+    nodePort: 30001
     port: 443
     protocol: TCP
     targetPort: https
   - name: http
-    nodePort: 31626
+    nodePort: 30002
     port: 80
     protocol: TCP
     targetPort: http
@@ -25,4 +24,4 @@ spec:
     app: traefik
     release: ssl-traefik
   sessionAffinity: None
-  type: LoadBalancer
+  type: NodePort

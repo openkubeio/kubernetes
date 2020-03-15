@@ -9,7 +9,7 @@ metadata:
   namespace: traefik-ingress
 spec:
   rules:
-  - host: dashboard.traefik.mycluster.net
+  - host: traefik.cluster.qa.kube.io
     http:
       paths:
       - backend:
