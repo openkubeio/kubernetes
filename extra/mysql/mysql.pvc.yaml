@@ -2,10 +2,10 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app: my-release-mysql
-    chart: mysql-1.6.2
-  name: my-release-mysql
-  namespace: default
+    app: mysql-v1
+    chart: mysql-v1
+  name: mysql
+  namespace: mysql
 spec:
   accessModes:
   - ReadWriteOnce

@@ -37,7 +37,8 @@ data:
 EOF
 
 
-[[ ! $(kubectl get ns | grep traefik | wc -l) == 1 ]] && kubectl create ns traefik-ingress
+[[ ! $(kubectl get ns |grep traefik-ingress |awk '{ if ( $1 == "traefik-ingress" ) print $1}' | wc -l) == 1 ]] && kubectl create ns traefik-ingress
+
 
 kubectl apply -f ssl-traefik.serviceaccount.yaml
 kubectl apply -f ssl-traefik.clusterrole.yaml

@@ -4,26 +4,26 @@ metadata:
   annotations:
     deployment.kubernetes.io/revision: "1"
   labels:
-    app: my-release-mysql
-    chart: mysql-1.6.2
-  name: my-release-mysql
-  namespace: default
+    app: mysql-v1
+    chart: mysql-v1
+  name: mysql
+  namespace: mysql
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: my-release-mysql
-      chart: mysql-1.6.2
+      app: mysql-v1
+      chart: mysql-v1
   template:
     metadata:
       labels:
-        app: my-release-mysql
-        chart: mysql-1.6.2
+        app: mysql-v1
+        chart: mysql-v1
     spec:
       containers:
       - image: mysql:5.7.28
         imagePullPolicy: IfNotPresent
-        name: my-release-mysql
+        name: mysql-v1
         ports:
         - containerPort: 3306
           name: mysql
@@ -33,12 +33,12 @@ spec:
           valueFrom:
             secretKeyRef:
               key: mysql-root-password
-              name: my-release-mysql
+              name: mysql
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               key: mysql-password
-              name: my-release-mysql
+              name: mysql
         - name: MYSQL_USER
           value: my-user
         - name: MYSQL_DATABASE
@@ -73,6 +73,6 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: my-release-mysql
+          claimName: mysql
 
 
