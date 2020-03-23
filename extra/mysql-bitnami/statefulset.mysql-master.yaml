@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: mysql
+    chart: mysql-6.10.3
+    component: master
+    heritage: Helm
+    release: mysql
+  name: mysql-master
+  namespace: mysql
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mysql
+      component: master
+      release: mysql
+  serviceName: mysql-master
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mysql
+        chart: mysql-6.10.3
+        component: master
+        heritage: Helm
+        release: mysql
+    spec:
+      containers:
+      - env:
+        - name: BITNAMI_DEBUG
+          value: "false"
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mysql-root-password
+              name: mysql
+        - name: MYSQL_DATABASE
+          value: my_database
+        - name: MYSQL_REPLICATION_MODE
+          value: master
+        - name: MYSQL_REPLICATION_USER
+          value: replicator
+        - name: MYSQL_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mysql-replication-password
+              name: mysql
+        image: docker.io/bitnami/mysql:8.0.19-debian-10-r49
+        imagePullPolicy: IfNotPresent
+        name: mysql
+        ports:
+        - containerPort: 3306
+          name: mysql
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /opt/bitnami/mysql/conf/my.cnf
+          name: config
+          subPath: my.cnf
+      volumes:
+      - configMap:
+          name: mysql-master
+        name: config

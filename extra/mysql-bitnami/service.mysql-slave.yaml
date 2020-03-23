@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mysql
+    chart: mysql-6.10.3
+    component: slave
+    heritage: Helm
+    release: mysql
+  name: mysql-slave
+  namespace: mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
+    targetPort: mysql
+  selector:
+    app: mysql
+    component: slave
+    release: mysql
+  type: ClusterIP
