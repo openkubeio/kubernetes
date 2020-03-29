@@ -5,3 +5,5 @@ metadata:
 provisioner: nfs-test # name can be anything
 parameters:
   archiveOnDelete: "false"
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
