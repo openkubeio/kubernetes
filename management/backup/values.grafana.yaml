@@ -1,0 +1,6 @@
+grafana.enabled: true
+grafana.ingress.enabled: true
+grafana.ingress.hosts: "grafana.dv.kube.io"
+
+prometheus.ingress.enabled: true
+prometheus.ingress.hosts: prometheus.dv.kube.io

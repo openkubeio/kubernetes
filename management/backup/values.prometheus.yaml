@@ -1,0 +1,9 @@
+alertmanager.enabled: true
+alertmanager.name: alertmanager
+alertmanager.image.repository: prom/alertmanager
+alertmanager.image.tag: v0.20.0
+
+alertmanager.ingress.enabled: true
+alertmanager.ingress.hosts:  alertmanager.dv.kube.io
+server.ingress.enabled: true
+server.ingress.hosts: prometheus.dv.kube.io
