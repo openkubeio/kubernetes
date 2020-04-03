@@ -1,0 +1,15 @@
+root:
+    password: myrootpassword
+    forcePassword: true
+replication:
+    password: myreplpassword
+    enabled: true
+master:
+    persistence:
+        enabled: true
+        storageClass: "nfs-storageclass"
+slave:
+    persistence:
+        enabled: true
+        storageClass: "nfs-storageclass"
+

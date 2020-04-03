@@ -4,7 +4,7 @@ metadata:
   labels:
     name: grafana
   name: grafana
-  namespace: monitoring
+  namespace: monitor
 spec:
   replicas: 1
   selector:
@@ -62,8 +62,8 @@ spec:
       securityContext:
         fsGroup: 472
         runAsUser: 472
-      serviceAccount: monitoring-user
-      serviceAccountName: monitoring-user
+      serviceAccount: monitor-user
+      serviceAccountName: monitor-user
       volumes:
       - configMap:
           defaultMode: 420

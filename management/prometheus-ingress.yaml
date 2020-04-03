@@ -1,13 +1,13 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: prometheus-ingress
-  namespace: monitoring
+  name: prometheus
+  namespace: monitor
 spec:
   rules:
   - host: prometheus.dv.kube.io
     http:
       paths:
       - backend:
-          serviceName: prometheus-service
+          serviceName: prometheus
           servicePort: 9090

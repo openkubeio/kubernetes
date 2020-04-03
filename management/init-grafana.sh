@@ -1,6 +1,7 @@
-kubectl create ns monitoring
-
-kubectl create configmap grafana --from-file grafana.ini -n monitoring
+# Cretae namespace if not exists
+[[ ! $(kubectl get ns |grep monitoring |awk '{ if ( $1 == "monitoring" ) print $1}' | wc -l) == 1 ]] && 
+ 
+kubectl create configmap grafana --from-file grafana.ini -n monitor
 
 adminuser=$(echo -n 'adminuser' | base64)
 adminpassword=$(echo -n 'adminpassword' | base64)
@@ -15,7 +16,7 @@ metadata:
   labels:
     app.kubernetes.io/name: grafana
   name: grafana
-  namespace: monitoring
+  namespace: monitor
 type: Opaque
 EOF
 

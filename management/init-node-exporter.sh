@@ -1,0 +1,1 @@
+helm install prommetheus-node-exporter stable/prometheus-node-exporter

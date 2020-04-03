@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prometheus-deployment
-  namespace: monitoring
+  name: prometheus
+  namespace: monitor
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: prometheus-server
+      app: prometheus
   template:
     metadata:
       labels:
-        app: prometheus-server
+        app: prometheus
     spec:
       containers:
       - name: prometheus
@@ -33,3 +33,5 @@ spec:
           name: prometheus-server-conf
       - name: prometheus-storage-volume
         emptyDir: {}
+      serviceAccount: monitor-user
+      serviceAccountName: monitor-user
