@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: grafana
-  namespace: monitoring
+  namespace: monitor
 spec:
   selector:
     name: grafana

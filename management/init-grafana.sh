@@ -1,5 +1,5 @@
 # Cretae namespace if not exists
-[[ ! $(kubectl get ns |grep monitoring |awk '{ if ( $1 == "monitoring" ) print $1}' | wc -l) == 1 ]] && 
+[[ ! $(kubectl get ns |grep monitor |awk '{ if ( $1 == "monitor" ) print $1}' | wc -l) == 1 ]] && kubectl create ns monitor 
  
 kubectl create configmap grafana --from-file grafana.ini -n monitor
 

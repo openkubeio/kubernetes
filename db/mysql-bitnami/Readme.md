@@ -1,3 +1,4 @@
+# https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
@@ -13,13 +14,17 @@ helm install mysql bitnami/mysql --namespace bitnami-mysql --values mysql-values
 
 ROOT_PASSWORD=$(kubectl get secret --namespace bitnami-mysql mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode)
       
-helm upgrade mysql bitnami/mysql --set root.password=$ROOT_PASSWORD
+helm upgrade mysql bitnami/mysql --set root.password=$ROOT_PASSWORD --namespace bitnami-mysql --values mysql-values.yaml
 	  
 -------------------------------------------------------------------------
+
+kubectl create ns myadmin
+	  
+helm install myadmin bitnami/phpmyadmin	 --namespace myadmin
 	  
 # To delete this helm chart:	
   
-helm delete mysql --namespace bitnami-mysql 
+helm delete myadmin --namespace bitnami-mysql 
 
 
 -------------------------------------------------------------------------
@@ -38,7 +43,7 @@ To connect to your database:
 
   2. To connect to master service (read/write):
 
-      mysql -h mysql.bitnami-mysql.svc.cluster.local -uroot -p my_database
+      mysql -h mysql.bitnami-mysql.svc.cluster.local -u root -p my_database
 
   3. To connect to slave service (read-only):
 

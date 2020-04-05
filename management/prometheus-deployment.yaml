@@ -31,7 +31,10 @@ spec:
         configMap:
           defaultMode: 420
           name: prometheus-server-conf
+ #    - name: prometheus-storage-volume
+ #      emptyDir: {}
       - name: prometheus-storage-volume
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: prometheus  
       serviceAccount: monitor-user
       serviceAccountName: monitor-user

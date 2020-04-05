@@ -69,5 +69,8 @@ spec:
           defaultMode: 420
           name: grafana
         name: config
-      - emptyDir: {}
-        name: storage
+#     - emptyDir: {}
+#       name: storage
+      - name: storage
+        persistentVolumeClaim:
+          claimName: grafana  
