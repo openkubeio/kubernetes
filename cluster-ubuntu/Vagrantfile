@@ -71,18 +71,27 @@ echo "user=`whoami`"
 echo "docker  version `docker version`"
 echo "kubelet version `kubelet --version`"
 echo "kubeadm version `kubeadm version`"
-echo "IPADDR_ENP0S8 `ifconfig enp0s8 | grep Mask | awk '{print $2}'| cut -f2 -d:`"
-echo "IPADDR_ENP0S3 `ifconfig enp0s3 | grep Mask | awk '{print $2}'| cut -f2 -d:`"
-echo "hostname `hostname -f`"
-echo "`ip -o -4 addr list`"
+
+IPADDR_ENP0S8=$(ifconfig enp0s8 | grep Mask | awk '{print $2}'| cut -f2 -d:)
+IPADDR_ENP0S3=$(ifconfig enp0s3 | grep Mask | awk '{print $2}'| cut -f2 -d:)
+HOSTNAME=$(hostname -f)
+
+echo "IPADDR_ENP0S8 $IPADDR_ENP0S8"
+echo "IPADDR_ENP0S3 $IPADDR_ENP0S3"
+echo "HOSTNAME $HOSTNAME"
 
 echo "--- Disable Swap "
 sudo swapoff -a
 sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab
 
 echo "--- Update Kube Config file for removing bootstrap file and cgroup driver"
+
 sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' \/etc\/systemd\/system\/kubelet.service.d\/10-kubeadm.conf
+
 echo "Environment=\"cgroup-driver=systemd\"" | sudo tee -a /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+echo "Environment=\"KUBELET_EXTRA_ARGS=--node-ip=$IPADDR_ENP0S8\"" | sudo tee -a /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
 
 echo "--- etc/hosts file to comment ip6"
 sudo sed -i '/ip6/s/^/#/' /etc/hosts

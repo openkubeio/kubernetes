@@ -1,5 +1,5 @@
 # kube-state-metrics-configs
-Kube state metrics kubernetes deployment configs
+# Kube state metrics kubernetes deployment configs
 
 kubectl apply -f service-account.yaml
 kubectl apply -f cluster-role.yaml
