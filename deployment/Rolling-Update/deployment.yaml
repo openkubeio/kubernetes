@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amz
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app-name: amz
+      deployment-name: amz
+  template:
+    metadata:
+      labels:
+        app-name: amz
+        deployment-name: amz
+    spec:
+      containers:
+      - image: gcr.io/google-samples/hello-app:${VERSION}
+        imagePullPolicy: Always
+        name: amz
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+             path: /
+             port: 8080
+          initialDelaySeconds: 5   ## Number of seconds after the container has started
+          periodSeconds: 5         ## How often (in seconds) to perform the probe
+          successThreshold: 1	   ## Minimum consecutive successes for the probe 
+          failureThreshold: 3      ## will try given times before giving up

@@ -1,0 +1,29 @@
+
+
+kubectl api-resources --namespaced=true | awk {'print $1'} | tail -n +2 | xargs -L1 kubectl -n get 
+
+kubectl api-resources --namespaced=true | awk {'print $1'} | tail -n +2 | xargs -L1 kubectl -n traefik-ingress  get 
+
+
+kubectl get ns -o=custom-columns=NAME:.metadata.name | tail -n +2 | xargs -L1 kubectl get all -n
+
+namespace=$(kubectl get ns -o=custom-columns=NAME:.metadata.name | tail -n +2)
+
+kubectl get pods -o wide  | awk {'print $1 $2 $3 $6 $7'}
+
+
+kubectl get pods -o wide  | awk 'BEGIN { FIELDWIDTHS="16 20 50 20 20"}{print $1 $2 $3 $6 $7}'
+
+for tbl in $namespace ; do  echo "$tbl" ; done ;
+
+for tbl in $namespace ; \
+do  echo "---$tbl---" ; \
+kubectl get pods -o wide -n "$tbl" | awk {'print $tbl $1 $2 $3 $6 $7'} ; \
+done ;
+
+
+
+
+
+
+
