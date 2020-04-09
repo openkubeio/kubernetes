@@ -6,7 +6,7 @@ VERSION=1.0 \
 envsubst < deployment.yaml | kubectl apply -f -
 
 # Check deploymnet roll out status
-kubectl rollout status deployment amzq
+kubectl rollout status deployment amz
 
 kubectl get svc
 
