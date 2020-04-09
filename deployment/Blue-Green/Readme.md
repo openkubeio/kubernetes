@@ -21,7 +21,6 @@ envsubst < deployment.yaml | kubectl apply -f -
 # Wait for it to become ready:
 kubectl rollout status deployment amz-green
 
-
 # Check the pods 
 kubectl get pods 
 

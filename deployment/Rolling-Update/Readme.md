@@ -9,6 +9,7 @@ envsubst < deployment.yaml | kubectl apply -f -
 kubectl rollout status deployment amzq
 
 kubectl get svc
+
 kubectl get pods
 
 # update deploymnet
@@ -19,10 +20,11 @@ envsubst < deployment.yaml | kubectl apply -f -
 kubectl rollout status deployment amz
 
 kubectl get svc
-kubectl get pods
 
+kubectl get pods
 
 Cleanup
 -------
 kubectl delete -f service.yaml
+
 kubectl delete -f deployment.yaml
