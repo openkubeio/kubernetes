@@ -9,4 +9,5 @@ spec:
   ports:
   - targetPort: 8080
     port: 80
+    nodePort: 32001
   type: NodePort
