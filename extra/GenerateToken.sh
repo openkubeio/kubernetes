@@ -30,7 +30,7 @@ done;
 
 
 # Create rolebinding
-[ $(kubectl get clusterrolebinding | grep ${user}-${namespace}-binding | wc -l ) == 0 ] && kubectl create clusterrolebinding  ${user}-binding --clusterrole cluster-admin --serviceaccount=${namespace}:${user}
+[ $(kubectl get clusterrolebinding | grep ${user}-${namespace}-binding | wc -l ) == 0 ] && kubectl create clusterrolebinding  ${user}-${namespace}-binding --clusterrole cluster-admin --serviceaccount=${namespace}:${user}
 
 # Store secret
 secret=$(kubectl get sa ${user} -o jsonpath="{.secrets[*]['name']}" -n ${namespace})
