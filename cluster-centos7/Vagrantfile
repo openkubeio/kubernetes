@@ -37,9 +37,11 @@ sudo docker version
 SCRIPT
 
 $install_kubeadm = <<-SCRIPT
+
 echo "--- Executing script install_kubeadm" 
 
 echo "--- Update apt respository to stable kubernetes"
+
 sudo tee /etc/yum.repos.d/kubernetes.repo <<  EOF
 [kubernetes]
 name=Kubernetes
@@ -51,25 +53,30 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 
 echo "--- Checking available version of kubeadm"
+
 echo "installing version $(curl -s https://packages.cloud.google.com/apt/dists/kubernetes-xenial/main/binary-amd64/Packages | grep Version | grep 1.17 | awk '{print $2}')"
 
 echo "--- Installing Kubeadm and kubelet - version 1.17.0"
+
 #sudo yum install -y kubelet kubeadm kubectl
 sudo yum install -y kubeadm-1.17.3 kubelet-1.17.3  kubectl-1.17.3
 
-echo "--- enable kubelet service"
+echo "--- enable kubelet service
+
 sudo systemctl enable kubelet
+
 SCRIPT
 
 
 $check_config = <<-SCRIPT
 
 echo "--- Checking versions and IPs"
+
 echo "HOME=$HOME"
 echo "user=$(whoami)"
 echo "docker  version $(docker version)"
 echo "kubelet version $(kubelet --version)"
-echo "kubeadm version `kubeadm version`"
+echo "kubeadm version $(kubeadm version)"
 
 IPADDR_ENP0S8=$(ifconfig eth1 | grep inet | grep broadcast | awk '{print $2}')
 HOST_NAME=$(hostname -f)
@@ -78,6 +85,7 @@ echo "IPADDR_ENP0S8 $IPADDR_ENP0S8"
 echo "HOST_NAME $HOST_NAME"
 
 echo "--- Disable Swap "
+
 sudo swapoff -a
 sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab
 
@@ -90,9 +98,11 @@ echo "Environment=\"cgroup-driver=systemd\"" | sudo tee -a /usr/lib/systemd/syst
 echo "Environment=\"KUBELET_EXTRA_ARGS=--node-ip=$IPADDR_ENP0S8\"" | sudo tee -a /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 echo "--- etc/hosts file to comment ip6"
+
 sudo sed -i '/ip6/s/^/#/' /etc/hosts
 
-echo "--- update firewall to allow connection"
+echo "--- update firewall to allow connection if enabled"
+
 # You may require to rum below command to ufw to allow pos to pod inter communication
 #sudo firewall-cmd --permanent --add-port=6443/tcp
 #sudo firewall-cmd --permanent --add-port=2379-2380/tcp
@@ -103,6 +113,7 @@ echo "--- update firewall to allow connection"
 #sudo firewall-cmd –-reload
 
 echo "--- update bridge-nf-call-iptables"
+
 echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 modprobe br_netfilter
 
@@ -110,6 +121,7 @@ SCRIPT
 
 
 $init_master = <<-SCRIPT
+
 echo "--- Executing script init_master" 
 
 echo "--- pull config images"
@@ -133,6 +145,7 @@ SCRIPT
 
 
 $post_master = <<-SCRIPT
+
 echo "--- Executing script post_master" 
 
 echo "--- Setup kubectl for vagrant user"
@@ -157,6 +170,7 @@ SCRIPT
 
 
 $init_worker = <<-SCRIPT
+
 echo "--- Executing script init_worker"
 
 echo "--- Join as worker node "
@@ -191,8 +205,8 @@ backend nodes
    mode tcp
    balance roundrobin
    option ssl-hello-chk
-   server node01 192.168.205.12:30001 check
-   server node02 192.168.205.13:30001 check
+   server node01 192.168.205.42:30001 check
+   server node02 192.168.205.42:30001 check
 
 ####END of Config
 EOF
@@ -204,6 +218,7 @@ echo "--- Restarting haproxy service"
 sudo systemctl stop haproxy
 sleep 5
 sudo systemctl start haproxy
+
 SCRIPT
 
 

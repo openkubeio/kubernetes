@@ -1,6 +1,3 @@
-# Cretae namespace traeik-ingress if not exists
-[[ ! $(kubectl get ns |grep traefik-ingress |awk '{ if ( $1 == "traefik-ingress" ) print $1}' | wc -l) == 1 ]] && kubectl create ns traefik-ingress
-
 # Crete dir certs if not exists
 [ -d certs ] || mkdir certs
 
@@ -40,6 +37,10 @@ data:
 ---  
 EOF
 
+# Cretae namespace traeik-ingress if not exists
+[[ ! $(kubectl get ns |grep traefik-ingress |awk '{ if ( $1 == "traefik-ingress" ) print $1}' | wc -l) == 1 ]] && kubectl create ns traefik-ingress
+
+
 kubectl apply -f ssl-traefik.serviceaccount.yaml
 kubectl apply -f ssl-traefik.clusterrole.yaml
 kubectl apply -f ssl-traefik.clusterrolebinding.yaml
@@ -55,11 +56,10 @@ kubectl get pods -n traefik-ingress
 kubectl get svc -n traefik-ingress
 
 
-echo "Traefik Running on https://traefik.dv.kube.io:30001/ as on Node Port"
 echo "Traefik Running on https://traefik.dv.kube.io/ as on Proxy"
 
 
-host_entry="192.168.205.14 traefik.dv.kube.io"
+host_entry="192.168.205.13 traefik.dv.kube.io"
 if [ $(cat /C/Windows/System32/drivers/etc/hosts | grep "$host_entry" | wc -l ) == 0  ] ; then
 echo $host_entry >> /C/Windows/System32/drivers/etc/hosts 
 fi;

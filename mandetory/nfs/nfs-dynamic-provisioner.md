@@ -22,20 +22,23 @@ sudo exportfs -rva
 # Restar nfs server and check status
 sudo systemctl restart nfs-server
 sudo systemctl status nfs-server
+#
 
-
+# -----------------------------------------
 # Login onto client and test nfs file share
 vagrant ssh worker1.vd.kube.io
 sudo apt install nfs-common
-sudo showmount -e 192.168.205.14
+sudo showmount -e 192.168.205.13
 sudo mkdir /mynfs
 sudo mount -t nfs 192.168.205.14:/nfs/kubedata /mynfs/
+# ------------------------------------------
 
 
 # Apply below kubectl to create nfs provisioned
 
 vagrant ssh worker1.dv.kube.io -- -t "sudo apt install nfs-common -y "
 vagrant ssh worker2.dv.kube.io -- -t "sudo apt install nfs-common -y "
+
 
 kubectl apply -f nfs-rbac.yaml
 kubectl apply -f nfs-storage-class.yaml

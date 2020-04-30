@@ -10,7 +10,7 @@ image:
   #   - secret2
 
 output:
-  host: elasticsearch-client.default.svc.cluster.local
+  host: elasticsearch-client.audit.svc.cluster.local
   port: 9200
   scheme: http
   sslVersion: TLSv1
@@ -38,7 +38,7 @@ extraEnvVars:
 #     readOnly: true
 
 plugins:
-  enabled: false
+  enabled: true
   pluginsList: []
 
 service:
@@ -69,19 +69,19 @@ annotations: {}
 #  prometheus.io/port: "24231"
 
 ingress:
-  enabled: true
+  enabled: false
   annotations:
-    kubernetes.io/ingress.class: traefik
+    kubernetes.io/ingress.class: nginx
 #    kubernetes.io/tls-acme: "true"
 #    # Depending on which version of ingress controller you may need to configure properly - https://kubernetes.github.io/ingress-nginx/examples/rewrite/#rewrite-target
 #    nginx.ingress.kubernetes.io/rewrite-target: /
   labels: []
   # If doing TCP or UDP ingress rule don't forget to update your Ingress Controller to accept TCP connections - https://kubernetes.github.io/ingress-nginx/user-guide/exposing-tcp-udp-services/
   hosts:
-    - name: "fluentd.dv.kube.io"
-      protocol: TCP
-      servicePort: 24220
-      path: /
+#     - name: "http-input.local"
+#       protocol: TCP
+#       servicePort: 9880
+#       path: /
   tls: {}
   # Secrets must be manually created in the namespace.
 #    - secretName: http-input-tls
@@ -146,7 +146,7 @@ configMaps:
         queue_limit_length "#{ENV['OUTPUT_BUFFER_QUEUE_LIMIT']}"
         overflow_action block
       </buffer>
-    </match>
+    </match>  
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

@@ -178,7 +178,8 @@ backend nodes
    mode tcp
    balance roundrobin
    option ssl-hello-chk
-   server node01 192.168.205.12:30001 check
+   server node01 192.168.205.11:30001 check
+   server node02 192.168.205.12:30001 check
    server node02 192.168.205.13:30001 check
 
 ####END of Config
@@ -192,6 +193,38 @@ sudo systemctl stop haproxy
 sleep 5
 sudo systemctl start haproxy
 SCRIPT
+
+
+$init_nfs_service = <<-SCRIPT
+echo "--- Executing script init_proxy"
+
+echo "--- Login onto nfs node and install nfs server"
+sudo apt-get update
+sudo apt-get install nfs-server -y
+sudo systemctl status nfs-server
+sudo apt install nfs-common -y
+
+echo "--- Create nfs shared directory"
+sudo mkdir /nfs/kubedata -p
+
+echo "--- Change owernship"
+sudo chown nobody:nogroup /nfs/kubedata
+
+echo "--- Update exports file"
+sudo tee -a /etc/exports << EOF
+/nfs/kubedata    *(rw,sync,no_subtree_check,no_root_squash,no_all_squash,insecure)
+## /nfs/general  192.168.205.13(rw,sync,no_subtree_check)
+EOF
+
+sudo exportfs -a
+sudo exportfs -rva
+
+echo "--- Restar nfs server and check status"
+sudo systemctl restart nfs-server
+sudo systemctl status nfs-server
+
+SCRIPT
+
 
 
 Vagrant.configure("2") do |config|
@@ -243,7 +276,12 @@ Vagrant.configure("2") do |config|
      end
 	 
 	 if servers["name"].include? "proxy" then
+	    srv.vm.provision "shell", inline: $install_docker
+        srv.vm.provision "shell", inline: $install_kubeadm
+	    srv.vm.provision "shell", inline: $check_config
+		srv.vm.provision "shell", inline: $init_worker
 	    srv.vm.provision "shell", inline: $init_proxy
+		srv.vm.provision "shell", inline: $init_nfs_service
      end
 	end
   end
