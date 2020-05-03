@@ -100,6 +100,9 @@ echo "--- update firewall to allow connection"
 # You may require to rum below command to ufw to allow pos to pod inter communication
 # sudo ufw allow in on cni0 && sudo ufw allow out on cni0
 # sudo ufw default allow routed
+
+echo "--- Install nfs common package for Storage/"
+sudo apt install nfs-common -y 
 SCRIPT
 
 

@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\audit",
+    "\\audit\\EFK",
+    "\\management"
+  ],
+  "SelectedNode": "\\audit\\EFK\\kibana.yaml",
+  "PreviewInSolutionExplorer": false
+}
