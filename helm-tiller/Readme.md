@@ -1,4 +1,4 @@
-Installing Helm
+#   Installing Helm
 
 	$ cd /tmp
 	$ curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > install-helm.sh
@@ -9,34 +9,34 @@ Installing Helm
 		helm installed into /usr/local/bin/helm
 		Run 'helm init' to configure helm.
 		
-	For Downloading binaries for specific release
-	
-    https://github.com/helm/helm/releases
-	
-Installing Tiller
+#	For Downloading binaries for specific release
+#   https://github.com/helm/helm/releases
 
-	Create the tiller serviceaccount:
+#   	
+#   Installing Tiller
+
+#	Create the tiller serviceaccount:
 
 	$ kubectl -n kube-system create serviceaccount tiller
 
-	Bind the tiller serviceaccount to the cluster-admin role:
+#	Bind the tiller serviceaccount to the cluster-admin role:
 
 	$ kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 	
-	Installs Tiller on our cluster
+#	Installs Tiller on our cluster
 	
 	$ helm init --service-account tiller --wait
 	
-	Secure Helm https://engineering.bitnami.com/articles/helm-security.html
+#	Secure Helm https://engineering.bitnami.com/articles/helm-security.html
 	
 	$ kubectl patch deployment tiller-deploy --namespace=kube-system --type=json --patch='[{"op": "add", "path": "/spec/template/spec/containers/0/command", "value": ["/tiller", "--listen=localhost:44134"]}]'
 	
-	
-Using Helm
+#	
+#   Using Helm
 
 	$ helm version
 	
-	To initialize helm on another machine, you won’t need to setup tiller again
+#	To initialize helm on another machine, you won’t need to setup tiller again
 	$ helm init --client-only 
 	$ helm version
 	
@@ -44,6 +44,4 @@ Using Helm
     $ helm install --name my-release --namespace dev stable/tomcat
 	$ helm delete my-release
 	
-Refer
-
-	https://zero-to-jupyterhub.readthedocs.io/en/stable/setup-helm.html
+#   Refer	https://zero-to-jupyterhub.readthedocs.io/en/stable/setup-helm.html

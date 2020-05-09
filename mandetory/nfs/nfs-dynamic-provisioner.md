@@ -1,4 +1,6 @@
-# Login onto nfs node and install nfs server
+# Login onto nfs node 192.168.205.14 
+
+# Install nfs server 
 sudo apt-get update
 sudo apt-get install nfs-server 
 sudo systemctl status nfs-server
@@ -16,17 +18,18 @@ sudo tee -a /etc/exports << EOF
 ## /nfs/general  192.168.205.14(rw,sync,no_subtree_check)
 EOF
 
+# Exports nfs config
 sudo exportfs -a
 sudo exportfs -rva
 
 # Restar nfs server and check status
 sudo systemctl restart nfs-server
 sudo systemctl status nfs-server
-#
+
 
 # -----------------------------------------
-# Login onto client and test nfs file share
-vagrant ssh worker1.vd.kube.io
+# Login onto client 192.168.205.13 and test nfs file share
+vagrant ssh worker1.vd.kube.io 
 sudo apt install nfs-common
 sudo showmount -e 192.168.205.13
 sudo mkdir /mynfs
@@ -35,15 +38,13 @@ sudo mount -t nfs 192.168.205.14:/nfs/kubedata /mynfs/
 
 
 # Apply below kubectl to create nfs provisioned
-
-vagrant ssh worker1.dv.kube.io -- -t "sudo apt install nfs-common -y "
-vagrant ssh worker2.dv.kube.io -- -t "sudo apt install nfs-common -y "
-
-
 kubectl apply -f nfs-rbac.yaml
 kubectl apply -f nfs-storage-class.yaml
 kubectl apply -f nfs-provisioner.yaml
 
+# install client on worker nodes
+vagrant ssh worker1.dv.kube.io -- -t "sudo apt install nfs-common -y "
+vagrant ssh worker2.dv.kube.io -- -t "sudo apt install nfs-common -y "
 
 # Quick test
 kubectl apply -f nfs-pvc-test.yaml

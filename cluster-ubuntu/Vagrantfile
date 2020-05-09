@@ -68,9 +68,9 @@ $check_config = <<-SCRIPT
 echo "--- Checking versions and IPs"
 echo "HOME=$HOME"
 echo "user=`whoami`"
-echo "docker  version `docker version`"
-echo "kubelet version `kubelet --version`"
-echo "kubeadm version `kubeadm version`"
+echo "docker_version=`docker version`"
+echo "kubelet_version=`kubelet --version`"
+echo "kubeadm_version=`kubeadm version`"
 
 IPADDR_ENP0S8=$(ifconfig enp0s8 | grep Mask | awk '{print $2}'| cut -f2 -d:)
 IPADDR_ENP0S3=$(ifconfig enp0s3 | grep Mask | awk '{print $2}'| cut -f2 -d:)
@@ -101,7 +101,7 @@ echo "--- update firewall to allow connection"
 # sudo ufw allow in on cni0 && sudo ufw allow out on cni0
 # sudo ufw default allow routed
 
-echo "--- Install nfs common package for Storage/"
+echo "--- Install nfs common package for Storage"
 sudo apt install nfs-common -y 
 SCRIPT
 
@@ -198,7 +198,7 @@ sudo systemctl start haproxy
 SCRIPT
 
 
-$init_nfs_service = <<-SCRIPT
+$init_nfs = <<-SCRIPT
 echo "--- Executing script init_proxy"
 
 echo "--- Login onto nfs node and install nfs server"
@@ -284,7 +284,7 @@ Vagrant.configure("2") do |config|
 	    srv.vm.provision "shell", inline: $check_config
 		srv.vm.provision "shell", inline: $init_worker
 	    srv.vm.provision "shell", inline: $init_proxy
-		srv.vm.provision "shell", inline: $init_nfs_service
+		srv.vm.provision "shell", inline: $init_nfs
      end
 	end
   end

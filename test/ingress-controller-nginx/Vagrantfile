@@ -1,0 +1,71 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$setup_haproxy = <<-SCRIPT
+echo ""
+echo "--- Installing ha proxy"
+echo " "
+sudo apt update && sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+sudo apt-get install -y haproxy
+sudo systemctl enable haproxy.service
+#sudo sed -i '/CONFIG\(.*\)haproxy.cfg/s/^/#/' /lib/systemd/system/haproxy.service
+#sudo sed -i '/CONFIG=\(.*\)haproxy.cfg/a Environment=CONFIG=\/vagrant\/haproxy.cfg' /lib/systemd/system/haproxy.service
+#cat /lib/systemd/system/haproxy.service
+#sudo systemctl stop haproxy
+#mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.original
+#sudo cp /vagrant/haproxy.cfg /etc/haproxy/haproxy.cfg
+sudo systemctl restart haproxy
+#sudo systemctl daemon-reload
+sudo systemctl status haproxy
+SCRIPT
+
+
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+# Using the hostmanager vagrant plugin to update the host files
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "ubuntu/xenial64"
+  config.vm.hostname = "haproxy1.dv.kube.io"
+  config.vm.network "private_network", ip: "192.168.205.18", :adapater=>2 # Add a second adapater with a specified IP
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # NOTE: This will enable public access to the opened port
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+    config.vm.provider "virtualbox" do |vb|
+       vb.name = "haproxy1"
+       vb.memory = 512
+       vb.cpus = 1
+    end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+    config.vm.provision "shell", inline: $setup_haproxy
+ end

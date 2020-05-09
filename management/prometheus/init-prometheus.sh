@@ -4,6 +4,7 @@
 kubectl create configmap prometheus-server-conf --from-file prometheus.config -n monitor
 
 kubectl apply -f rbac.yaml
+kubectl apply -f prometheus-pvc.yaml
 kubectl apply -f prometheus-deployment.yaml
 kubectl apply -f prometheus-service.yaml
 kubectl apply -f prometheus-ingress.yaml

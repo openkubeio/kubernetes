@@ -20,10 +20,12 @@ metadata:
 type: Opaque
 EOF
 
+kubectl apply -f grafana-pvc.yaml
 kubectl apply -f grafana-secret.yaml
 kubectl apply -f grafana-deployment.yaml
 kubectl apply -f grafana-service.yaml
 kubectl apply -f grafana-ingress.yaml
+
 
 host_entry="192.168.205.14 grafana.dv.kube.io"
 if [ $(cat /C/Windows/System32/drivers/etc/hosts | grep "$host_entry" | wc -l ) == 0  ] ; then
