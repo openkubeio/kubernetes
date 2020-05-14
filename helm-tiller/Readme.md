@@ -45,3 +45,16 @@
 	$ helm delete my-release
 	
 #   Refer	https://zero-to-jupyterhub.readthedocs.io/en/stable/setup-helm.html
+
+
+#   Using Helm chart without internet
+
+    $ helm pull <chart name>
+    $ ls #The chart will be pulled as a tar to the local directory
+    $ helm install <whatever release name you want>  <chart name>.tgz
+
+	$ helm pull stable/mysql
+	$ ls #  mysql-1.6.3.tgz
+	$ helm install mysql  mysql-1.6.3.tgz
+
+

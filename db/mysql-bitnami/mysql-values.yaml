@@ -11,7 +11,7 @@ master:
         enabled: true
         storageClass: "nfs-storageclass"
 slave:
-    replicas: 1
+    replicas: 2
     persistence:
         enabled: true
         storageClass: "nfs-storageclass"

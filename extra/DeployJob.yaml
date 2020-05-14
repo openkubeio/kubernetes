@@ -1,0 +1,16 @@
+kind: Job
+metadata:
+  name: countdown
+spec:
+  template:
+    metadata:
+      name: countdown
+    spec:
+      containers:
+      - name: counter
+        image: busybox
+        args:
+        - /bin/sh
+        - -c
+        - date; echo Hello from the Kubernetes cluster;
+      restartPolicy: Never

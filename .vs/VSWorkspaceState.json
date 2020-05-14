@@ -1,10 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\audit",
     "\\audit\\EFK",
-    "\\management"
+    "\\management\\kube-state-metrics",
+    "\\management\\prometheus",
+    "\\mandetory",
+    "\\mandetory\\nfs",
+    "\\test"
   ],
-  "SelectedNode": "\\instruction.txt",
+  "SelectedNode": "\\audit",
   "PreviewInSolutionExplorer": false
 }

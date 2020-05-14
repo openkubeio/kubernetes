@@ -2,16 +2,21 @@ kubectl get ds fluentd -n kube-logging -o yaml
 
 kubectl get pods --all-namespaces | grep fluent
 
+# patch ds container image name
+
 kubectl patch ds fluentd -n kube-logging -p '{"spec":{"template":{"spec":{"containers":[{"name":"fluentd","image":"ibmcom/fluentd-amd64:v1.2.2-icp"}]}}}}'
 
 kubectl patch ds fluentd -n kube-logging -p '{"spec":{"template":{"spec":{"containers":[{"name":"fluentd","image":"fluent/fluentd-kubernetes-daemonset:v1.4.2-debian-elasticsearch-1.1"}]}}}}'
 
+
+# patch pod container image name
 
 kubectl get pods fluentd-4wr7p -n kube-logging -o=jsonpath="{.spec.containers[:1].image}"
 
 kubectl patch pod fluentd-4wr7p -n kube-logging -p '{"spec":{"containers":[{"name":"fluentd","image":"fluent/fluentd-kubernetes-daemonset:v1.4.2-debian-elasticsearch-1.1"}]}}'
 
 
+# 
 
 kubectl get pods --all-namespaces -o=jsonpath="{..image}"
 
@@ -19,6 +24,7 @@ kubectl get pods --all-namespaces -o jsonpath="{..image}" |\
 tr -s '[[:space:]]' '\n' |\
 sort |\
 uniq -c
+
 
 kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services nodeport
 
