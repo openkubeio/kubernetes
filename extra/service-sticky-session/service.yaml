@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: amz
+#  annotations:
+#    traefik.backend.loadbalancer.stickiness: "true"
+spec:
+  selector:
+    app-name: amz
+  ports:
+  - targetPort: 8080
+    port: 80
+  type: NodePort  
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: amz
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: amz.dv.kube.io
+    http:
+      paths:
+      - backend:
+          serviceName: amz
+          servicePort: 80
+---          
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: amz1
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: amz.dv.kube.io
+    http:
+      paths: 
+      - path: /api
+        backend:
+          serviceName: amz
+          servicePort: 80
+---          
+  

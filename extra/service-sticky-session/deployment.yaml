@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amz-${VERSION}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app-name: amz
+    spec:
+  template:
+    metadata:
+      labels:
+        app-name: amz
+        deployment-ver: ${VERSION}
+    spec:
+      containers:
+      - name: amz
+        image: gcr.io/google-samples/hello-app:${TAG}
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+             path: /
+             port: 8080
+          initialDelaySeconds: 5   ## Number of seconds after the container has started
+          periodSeconds: 5         ## How often (in seconds) to perform the probe
+          successThreshold: 1	   ## Minimum consecutive successes for the probe 
+          failureThreshold: 3      ## will try given times before giving up
+---
