@@ -21,6 +21,7 @@ do  echo "---$tbl---" ; \
 kubectl get pods -o wide -n "$tbl" | awk {'print $tbl $1 $2 $3 $6 $7'} ; \
 done ;
 
+kubectl get pods --all-namespaces -o custom-columns=NS:.metadata.namespace,KIND:.kind,Name:.metadata.name,NODE:.spec.nodeName,PODIP:.status.podIP,PARENT:.metadata.ownerReferences[*].kind,PHASE:.status.phase,image:.spec.containers[*].image
 
 
 

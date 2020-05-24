@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mypsp
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mypsp
+  namespace:  mypsp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busybox-restricted
+  namespace: mypsp
+  labels:
+    app: busybox-restricted
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox-restricted
+  template:
+    metadata:
+      labels:
+        app: busybox-restricted
+    spec:
+#     securityContext:
+#       runAsUser: 1001
+#       fsGroup: 1000
+      volumes:
+      - name: sec-ctx-vol
+        emptyDir: {}
+      containers:
+      - name: busybox-restricted
+        image: busybox
+        command: ["sleep", "3600"]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: sec-ctx-vol
+          mountPath: /data/demo
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+      serviceAccount: mypsp
+---    

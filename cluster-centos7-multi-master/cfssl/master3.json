@@ -1,0 +1,21 @@
+{
+  "CN": "master3.etc.kube.io",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+  {
+    "C": "GB",
+    "L": "London",
+    "O": "Custom Widgets",
+    "OU": "Custom Widgets Hosts",
+    "ST": "England"
+  }
+  ],
+  "hosts": [
+    "master3.etc.kube.io",
+    "192.168.205.53",
+    "127.0.0.1"
+  ]
+}

@@ -1,0 +1,37 @@
+[Unit]
+Description=Etcd Server
+After=network.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+WorkingDirectory=/var/lib/etcd/
+EnvironmentFile=-/etc/etcd/etcd.conf
+User=etcd
+# set GOMAXPROCS to number of processors
+ExecStart=/usr/bin/etcd \
+--name etcd-2 \
+--data-dir /var/lib/etcd/default.etcd \
+--cert-file=/vagrant/openssl/kubernetes.pem \
+--key-file=/vagrant/openssl/kubernetes-key.pem \
+--peer-cert-file=/vagrant/openssl/kubernetes.pem \
+--peer-key-file=/vagrant/openssl/kubernetes-key.pem \
+--trusted-ca-file=/vagrant/openssl/ca.pem \
+--peer-trusted-ca-file=/vagrant/openssl/ca.pem \
+--peer-client-cert-auth \
+--client-cert-auth \
+--initial-advertise-peer-urls https://192.168.205.52:2380 \
+--listen-peer-urls https://192.168.205.52:2380 \
+--listen-client-urls https://192.168.205.52:2379,http://127.0.0.1:2379 \
+--advertise-client-urls https://192.168.205.52:2379 \
+--initial-cluster-token etcd-cluster-1 \
+--initial-cluster etcd-3=https://192.168.205.53:2380,etcd-2=https://192.168.205.52:2380,etcd-1=https://192.168.205.51:2380 \
+--initial-cluster-state new \
+--heartbeat-interval 1000 \
+--election-timeout 5000
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
