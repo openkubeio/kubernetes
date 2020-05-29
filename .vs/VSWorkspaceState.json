@@ -1,13 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\audit\\EFK",
-    "\\management\\kube-state-metrics",
-    "\\management\\prometheus",
-    "\\mandetory",
-    "\\mandetory\\nfs",
-    "\\test"
+    "\\cluster-centos-vm-backup",
+    "\\cluster-etcd-ok-ssl",
+    "\\cluster-ubuntu-single-master",
+    "\\db",
+    "\\db\\mysql-bitnami",
+    "\\db\\mysql-statefulset",
+    "\\db\\redis-bitnami",
+    "\\extra",
+    "\\management"
   ],
-  "SelectedNode": "\\audit",
+  "SelectedNode": "\\extra\\DeployPodWithDependency.yaml",
   "PreviewInSolutionExplorer": false
 }

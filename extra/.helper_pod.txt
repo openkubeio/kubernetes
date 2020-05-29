@@ -1,0 +1,21 @@
+kubectl get pods --all-namespaces -o custom-columns=NS:.metadata.namespace,KIND:.kind,Name:.metadata.name,NODE:.spec.nodeName,PHASE:.status.phase,PODIP:.status.podIP,PARENT:.metadata.ownerReferences[*].kind
+
+
+kubectl get pods -n traefik-ingress -o custom-columns=\
+NAME:.metadata.name,\
+NODE_NAME:.spec.nodeName,\
+PHASE:.status.phase,\
+PODIP:.status.podIP,\
+IMAGE:.spec.containers[*].image,\
+PORTS:.spec.containers[*].ports[*].containerPort,\
+CREATE:.metadata.creationTimestamp,\
+LAST_STATE:.status.containerStatuses[*].lastState.terminated.reason
+
+
+
+kubectl get pods -n traefik-ingress -o json | jq -r '.items[] .metadata.name'
+
+kubectl get pods -n traefik-ingress -o json | jq -r '.items[] | "\(.metadata.name)\t\(.metadata.namespace)"'
+
+
+kubectl get pods -n traefik-ingress --selector=app=traefik,release=ssl-traefik -o json | jq -r '.items[] | "\(.metadata.name)\t\(.status.podIP)"'

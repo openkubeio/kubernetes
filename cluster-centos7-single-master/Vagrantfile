@@ -13,15 +13,34 @@ $install_docker = <<-SCRIPT
 
 echo "--- Executing script install_docker" 
 
-sudo yum update -y
-sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-sudo yum install -y ca-certificates curl net-tools
+echo "--- Create data directory for installation"
+[ -d /data/cluster-centos7 ] || sudo mkdir -p /data/cluster-centos7/
+
+echo "--- Updating yum packages"
+sudo yum update -y 2>&1 | tee -a /data/cluster-centos7/init_master.log
+
+echo "--- Installing docker util packages"
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2 | tee -a /data/cluster-centos7/init_master.log
+sudo yum install -y ca-certificates curl net-tools 2>&1 | tee -a /data/cluster-centos7/init_master.log
+
+
+echo "--- Add Docker’s official GPG key"
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+echo "--- List stable repository for docker"
 sudo yum list docker-ce.x86_64 --showduplicates | sort -r | grep 19.
+
+echo "--- Installing docker"
 sudo yum install -y docker-ce-19.03.0
+
+echo "--- Starting docker"
 sudo systemctl enable docker
 sudo systemctl start docker
+
+echo "--- Cheking docker"
 sudo docker version
+
+echo "--- Update docker cgroup driver"
 sudo tee  /etc/docker/daemon.json  << EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -32,8 +51,10 @@ sudo tee  /etc/docker/daemon.json  << EOF
   "storage-driver": "overlay2"
 }
 EOF
+
+echo "--- Restart docker"
 sudo systemctl restart docker
-sudo docker version
+
 SCRIPT
 
 $install_kubeadm = <<-SCRIPT
@@ -72,8 +93,8 @@ $check_config = <<-SCRIPT
 
 echo "--- Checking versions and IPs"
 
-echo "HOME=$HOME"
-echo "user=$(whoami)"
+echo "HOME            $HOME"
+echo "user            $(whoami)"
 echo "docker  version $(docker version)"
 echo "kubelet version $(kubelet --version)"
 echo "kubeadm version $(kubeadm version)"
@@ -117,6 +138,9 @@ echo "--- update bridge-nf-call-iptables"
 echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 modprobe br_netfilter
 
+echo "--- Install nfs common package for Storage"
+sudo yum install nfs-common -y 
+
 SCRIPT
 
 
@@ -127,19 +151,16 @@ echo "--- Executing script init_master"
 echo "--- pull config images"
 sudo kubeadm config images pull
 
-echo "--- Create data directory for installation"
-sudo mkdir -p /data/cluster-centos7/
-
 echo "--- Export variables"
 HOST_NAME=$(hostname -f)
 IPADDR_ENP0S8=$(ifconfig eth1 | grep inet | grep broadcast | awk '{print $2}')
 
 echo "--- Initialise kubeadm"
-sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8 --apiserver-cert-extra-sans=$IPADDR_ENP0S8  --node-name $HOST_NAME  --pod-network-cidr 10.10.0.0/16 --service-cidr  10.150.0.0/16  2>&1 | tee /data/cluster-centos7/init_master.log
+sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8 --apiserver-cert-extra-sans=$IPADDR_ENP0S8  --node-name $HOST_NAME  --pod-network-cidr 10.10.0.0/16 --service-cidr  10.150.0.0/16  2>&1 | tee -a /data/cluster-centos7/init_master.log
 
 echo "--- Export token for Worker Node"
 sudo kubeadm token create --print-join-command > /data/cluster-centos7/kubeadm_join_cmd.sh
-sudo chmod +x /data/cluster-centos7/kubeadm_join_cmd.
+sudo chmod +x /data/cluster-centos7/kubeadm_join_cmd
 
 SCRIPT
 
@@ -206,7 +227,7 @@ backend nodes
    balance roundrobin
    option ssl-hello-chk
    server node01 192.168.205.42:30001 check
-   server node02 192.168.205.42:30001 check
+   server node02 192.168.205.43:30001 check
 
 ####END of Config
 EOF
@@ -218,6 +239,36 @@ echo "--- Restarting haproxy service"
 sudo systemctl stop haproxy
 sleep 5
 sudo systemctl start haproxy
+
+SCRIPT
+
+$init_nfs = <<-SCRIPT
+
+echo "--- Executing script init_proxy"
+
+echo "--- Login onto nfs node and install nfs server"
+sudo yum install nfs-server -y
+sudo systemctl status nfs-server
+sudo yum install nfs-common -y
+
+echo "--- Create nfs shared directory"
+sudo mkdir /nfs/kubedata -p
+
+echo "--- Change owernship"
+sudo chown nobody:nogroup /nfs/kubedata
+
+echo "--- Update exports file"
+sudo tee -a /etc/exports << EOF
+/nfs/kubedata    *(rw,sync,no_subtree_check,no_root_squash,no_all_squash,insecure)
+## /nfs/general  192.168.205.44(rw,sync,no_subtree_check)
+EOF
+
+sudo exportfs -a
+sudo exportfs -rva
+
+echo "--- Restar nfs server and check status"
+sudo systemctl restart nfs-server
+sudo systemctl status nfs-server
 
 SCRIPT
 
@@ -272,9 +323,13 @@ Vagrant.configure("2") do |config|
      end
 	 
 	 if servers["name"].include? "proxy" then
+	    srv.vm.provision "shell", inline: $install_docker
+        srv.vm.provision "shell", inline: $install_kubeadm
+	    srv.vm.provision "shell", inline: $check_config
+		srv.vm.provision "shell", inline: $init_worker
 	    srv.vm.provision "shell", inline: $init_proxy
+		srv.vm.provision "shell", inline: $init_nfs
      end
-	 
 	end
   end
 end

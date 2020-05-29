@@ -1,0 +1,34 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Allow
+  suspend: true  
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+            volumeMounts:
+            - mountPath: /data/env.conf
+              name: config
+              subPath: env.conf
+            - mountPath: /busydata
+              name: storage	
+          restartPolicy: OnFailure
+          volumes:
+          - configMap:
+              defaultMode: 420
+              name: grafana
+            name: config
+          - name: storage
+            persistentVolumeClaim:
+              claimName: grafana  

@@ -21,7 +21,83 @@ do  echo "---$tbl---" ; \
 kubectl get pods -o wide -n "$tbl" | awk {'print $tbl $1 $2 $3 $6 $7'} ; \
 done ;
 
-kubectl get pods --all-namespaces -o custom-columns=NS:.metadata.namespace,KIND:.kind,Name:.metadata.name,NODE:.spec.nodeName,PODIP:.status.podIP,PARENT:.metadata.ownerReferences[*].kind,PHASE:.status.phase,image:.spec.containers[*].image
+
+kubectl get pods --all-namespaces -o custom-columns=NS:.metadata.namespace,KIND:.kind,Name:.metadata.name,NODE:.spec.nodeName,PHASE:.status.phase,PODIP:.status.podIP,PARENT:.metadata.ownerReferences[*].kind,IMAGE:.spec.containers[*].image
+
+
+kubectl get svc --all-namespaces  -o custom-columns=NS:.metadata.namespace,KIND:.kind,Name:.metadata.name,CLUSTER_IP:.spec.clusterIP,NODE_PORT:.spec.ports[*].nodePort
+
+
+export POD_NAME=$(kubectl get pod -l app=my-app -o jsonpath="{.items[0].metadata.name}")
+export POD_NODE=$(kubectl get pod -l app=my-app -o jsonpath="{.items[0].spec.nodeName}")
+export PORT=$(kubectl get svc ssl-traefik -n traefik-ingress -o jsonpat="{.spec.ports[0].nodePort}"}
+
+kubectl get svc --all-namespaces  -o custom-columns=NS:.metadata.namespace,KIND:.kind,Name:.metadata.name,TYPE:.spec.type,NODE_PORT:.spec.ports[*].nodePort,selector:.spec.selector | grep NodePort
+
+kubectl get pods --all-namespaces -o custom-columns=NS:.metadata.namespace,KIND:.kind,Name:.metadata.name,PHASE:.status.phase,NODE:.spec.nodeName
+
+kubectl get svc -n traefik-ingress -o custom-columns=Name:.metadata.name,selector:.spec.selector
+
+kubectl get svc ssl-traefik -n traefik-ingress -o json | jq '.apiVersion'
+
+kubectl get svc -n traefik-ingress -o json | jq '.items[] .spec.selector'
+
+kubectl get svc -n traefik-ingress -o json | jq '.items[] .spec.selector | to_entries | .[] | "\(.key)=\(.value),"'
+
+
+kubectl get svc -n traefik-ingress -o json | jq -j '.items[]  .spec.selector | to_entries | .[] | "\(.key)=\(.value),"'
+
+kubectl get svc -n traefik-ingress -o json | jq -j '.items[] .spec.selector | to_entries | .[0] | "\(.key)=\(.value),"'
+
+kubectl get svc -n traefik-ingress -o json | jq -j '.items[] .spec.selector | to_entries | .[1] | "\(.key)=\(.value),"'
+
+sel=$(kubectl get svc -n traefik-ingress -o json | jq -j '.items[] .spec.selector | to_entries')
+
+echo $sel | jq -j  '.[] | "\(.key)=\(.value),"'
+
+echo $sel | jq -r  '.[] | "\(.key)=\(.value),"'
+
+kubectl get svc -n traefik-ingress -o json | jq -j '.items | length'  
+
+kubectl get svc -n traefik-ingress  -o json | jq -r '.items[] | "\(.metadata.name)\t\(.spec.selector)"'  
+
+-----------------------------------------------------------------------
+
+Currentlu using this query-
+
+kubectl get svc -n traefik-ingress  -o json | jq -r '.items[] | "\(.metadata.name)\t\(.spec.clusterIP)\t\(.spec.ports[] .port)\t\(.spec.type)\t\(.spec.ports[] .nodePort)\t\(.spec.selector)"'
+
+
+kubectl get svc -n traefik-ingress  -o json | jq -r '.items[] | "\(.metadata.name)\t\(.spec.clusterIP)\t\(.spec.ports[] .port)\t\(.spec.type)\t\(.spec.ports[] .nodePort)\t\(.spec.selector)"' | awk  {'print $6'} 
+
+kubectl get svc -n traefik-ingress  -o json | jq -r '.items[] | "\(.metadata.name)\t\(.spec.clusterIP)\t\(.spec.ports[] .port)\t\(.spec.type)\t\(.spec.ports[] .nodePort)\t\(.spec.selector)"'  | awk  {'print $6'} | sed 's/:/=/g' | sed 's/["{}]//g'
+
+
+kubectl get svc -n traefik-ingress  -o json | jq -r '.items[] | "\(.metadata.name)\t\(.spec.clusterIP)\t\(.spec.ports[] .port)\t\(.spec.type)\t\(.spec.ports[] .nodePort)\t\(.spec.selector)"'  | awk  {'print $1 "\t" $5 "\t" $6'} | sed 's/:/=/g' | sed 's/["{}]//g'
+
+kubectl get svc -n traefik-ingress  -o json | jq -r '.items[] | "\(.metadata.name)\t\(.spec.type)\t\(.spec.ports[] .nodePort)\t\(.spec.selector)"' | grep NodePort  | awk  {'print $1 "\t" $2 "\t" $3 "\t" $4'} | sed 's/:/=/g' | sed 's/["{}]//g'
+
+
+------------------------------------------------------------------------
+svc_data=$(kubectl get svc -n traefik-ingress  -o json)
+
+svc_selectors=$(echo $svc_data | jq -r '.items[] | "\(.spec.type)\t\(.spec.ports[] .nodePort)\t\(.spec.selector)"' | grep NodePort  | awk  {'print $3'} | sed 's/:/=/g' | sed 's/["{}]//g')
+
+
+pod_data=$(kubectl get pods -n traefik-ingress --selector=$svc_selector)
+
+
+---------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
 
 
 
