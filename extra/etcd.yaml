@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: etcd-box
+  labels:
+    app: etcd-box
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: etcd-box
+  containers:
+  - image: k8s.gcr.io/etcd:3.4.3-0
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    name: etcd-box
+    volumeMounts:
+    - mountPath: /etc/kubernetes/pki/etcd
+      name: etcd-certs   
+  volumes:
+  - hostPath:
+    name: etcd-certs
+      path: /etc/kubernetes/pki/etcd
+      type: DirectoryOrCreate    
+---

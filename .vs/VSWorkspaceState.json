@@ -11,6 +11,6 @@
     "\\extra",
     "\\management"
   ],
-  "SelectedNode": "\\extra\\DeployPodWithDependency.yaml",
+  "SelectedNode": "\\cluster-centos-vm-backup\\mynewbox.box",
   "PreviewInSolutionExplorer": false
 }

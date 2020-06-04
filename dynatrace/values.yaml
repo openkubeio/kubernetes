@@ -1,0 +1,25 @@
+platform: "kubernetes"
+operator:
+  image: ""
+oneagent:
+  name: "oneagent"
+  apiUrl: "https://lrp86192.live.dynatrace.com/api"
+  image: ""
+  args:
+    - --set-app-log-content-access=true
+  env: {}
+  nodeSelector: {}
+  labels: {}
+  skipCertCheck: false
+  disableAgentUpdate: false
+  enableIstio: false
+  dnsPolicy: ""
+  resources: {}
+  waitReadySeconds: null
+  priorityClassName: ""
+  serviceAccountName: ""
+  proxy: ""
+  trustedCAs: ""
+secret:
+  apiToken: "M1tDmWx7SSKwS-H8HB2ic"
+  paasToken: "cjrY6cEmSK-Jp6R8GjLDL"

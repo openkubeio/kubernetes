@@ -1,3 +1,5 @@
+https://scotch.io/tutorials/how-to-create-a-vagrant-base-box-from-an-existing-one
+
 
 [ $(vagrant plugin list | grep vagrant-hostmanager | wc -l) != 1 ] && vagrant plugin install vagrant-hostmanager 
 
@@ -9,8 +11,8 @@ vagrant halt
 
 vagrant box list
 
-vagrant package --base default  --output ~/centos/7-yumupdated-20.05.26.box
+vagrant package --base master.qa.kube.io  --output kube-master.box
 
-vagrant box add ~/centos/7-yumupdated-20.05.26.box --name centos/7-yumupdated
+vagrant box add kube-master.box --name kube-master
 
 vagrant box list
