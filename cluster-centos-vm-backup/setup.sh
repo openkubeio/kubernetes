@@ -11,8 +11,12 @@ vagrant halt
 
 vagrant box list
 
-vagrant package --base master.qa.kube.io  --output kube-master.box
+vagrant package --base master.qa.kube.io  --output kube-manager.box
 
-vagrant box add kube-master.box --name kube-master
+vagrant package --output kube-manager.box
+
+vagrant box add kube-master.box --name kube-manager.box
 
 vagrant box list
+
+--output kube-manager.box

@@ -82,7 +82,7 @@ echo "--- Installing Kubeadm and kubelet - version 1.17.0"
 #sudo yum install -y kubelet kubeadm kubectl
 sudo yum install -y kubeadm-1.17.3 kubelet-1.17.3  kubectl-1.17.3
 
-echo "--- enable kubelet service
+echo "--- enable kubelet service"
 
 sudo systemctl enable kubelet
 
@@ -95,9 +95,9 @@ echo "--- Checking versions and IPs"
 
 echo "HOME            $HOME"
 echo "user            $(whoami)"
-echo "docker  version $(docker version)"
-echo "kubelet version $(kubelet --version)"
-echo "kubeadm version $(kubeadm version)"
+echo "docker  version $(sudo docker version)"
+echo "kubelet version $(sudo kubelet --version)"
+echo "kubeadm version $(sudo kubeadm version)"
 
 IPADDR_ENP0S8=$(ifconfig eth1 | grep inet | grep broadcast | awk '{print $2}')
 HOST_NAME=$(hostname -f)
@@ -135,11 +135,14 @@ echo "--- update firewall to allow connection if enabled"
 
 echo "--- update bridge-nf-call-iptables"
 
-echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
-modprobe br_netfilter
+sudo tee /proc/sys/net/bridge/bridge-nf-call-iptables << EOF
+ 1
+EOF
 
-echo "--- Install nfs common package for Storage"
-sudo yum install nfs-common -y 
+sudo modprobe br_netfilter
+
+#echo "--- Install nfs common package for Storage"
+#sudo yum install nfs-common -y 
 
 SCRIPT
 
@@ -306,7 +309,13 @@ Vagrant.configure("2") do |config|
 #       vb.customize ["modifyvm", :id, "--cpuexecutioncap", "10"] # Limit to VM to 10% of available 
       end
 	  
-	  
+	  srv.vm.provision "shell", inline: <<-SHELL
+         sudo yum update -y 
+         sudo yum install -y yum-utils device-mapper-persistent-data lvm2 
+         sudo yum install -y ca-certificates curl net-tools nfs-utils
+		 [ -d /data/cluster-centos7 ] || sudo mkdir -p /data/cluster-centos7/
+      SHELL
+	
 	  if servers["name"].include? "master" then
 		srv.vm.provision "shell", inline: $install_docker
         srv.vm.provision "shell", inline: $install_kubeadm
