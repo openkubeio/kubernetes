@@ -1,4 +1,3 @@
-
 sudo package-cleanup -y --oldkernels --count=1
 sudo yum -y autoremove
 sudo yum clean all

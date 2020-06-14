@@ -1,16 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\cluster-centos-vm-backup",
-    "\\cluster-etcd-ok-ssl",
+    "\\cluster-centos-base",
+    "\\cluster-centos-boot",
     "\\cluster-ubuntu-single-master",
-    "\\db",
-    "\\db\\mysql-bitnami",
-    "\\db\\mysql-statefulset",
-    "\\db\\redis-bitnami",
     "\\extra",
     "\\management"
   ],
-  "SelectedNode": "\\cluster-centos-vm-backup\\mynewbox.box",
+  "SelectedNode": "\\cluster-centos-boot\\Vagrantfile",
   "PreviewInSolutionExplorer": false
 }
