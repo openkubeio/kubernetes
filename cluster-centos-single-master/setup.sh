@@ -8,17 +8,13 @@ vagrant up
 echo "--- Updating service file"
 vagrant ssh master.qa.kube.io -- -t "sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab; sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' \/usr\/lib\/systemd\/system\/kubelet.service.d\/10-kubeadm.conf"
 vagrant ssh worker.qa.kube.io -- -t "sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab; sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' \/usr\/lib\/systemd\/system\/kubelet.service.d\/10-kubeadm.conf"
-#vagrant ssh worker2.qa.kube.io -- -t "sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab; sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' \/usr\/lib\/systemd\/system\/kubelet.service.d\/10-kubeadm.conf"
-#vagrant ssh proxy.qa.kube.io -- -t "sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab; sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' \/usr\/lib\/systemd\/system\/kubelet.service.d\/10-kubeadm.conf"
-
 
 echo "Copying config from cluster"
 cp ../data/cluster-centos7/config ~/.kube/
 
 echo "Labeling the nodes"
-kubectl label node worker1.qa.kube.io  node-role.kubernetes.io=worker
-kubectl label node worker.qa.kube.io  node-role.kubernetes.io=worker
-kubectl label node worker.qa.kube.io  node-role.kubernetes.io=management
+kubectl label node worker.qa.kube.io node-role.kubernetes.io/worker=worker 
+kubectl label node worker.qa.kube.io node-role.kubernetes.io/management=management  
 
 echo "validating  the nodes"
 kubectl get nodes

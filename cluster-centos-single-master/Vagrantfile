@@ -135,9 +135,6 @@ EOF
 
 sudo modprobe br_netfilter
 
-echo "--- Install nfs common package for Storage"
-sudo yum install nfs-utils -y 
-
 SCRIPT
 
 
@@ -157,7 +154,6 @@ sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8 --apiserver-cert
 
 echo "--- Export token for Worker Node"
 sudo kubeadm token create --print-join-command > /data/cluster-centos7/kubeadm_join_cmd.sh
-sudo chmod +x /data/cluster-centos7/kubeadm_join_cmd.sh
 
 SCRIPT
 
@@ -191,8 +187,12 @@ $init_worker = <<-SCRIPT
 
 echo "--- Executing script init_worker"
 
+echo "--- Install nfs common package for Storage"
+sudo yum install nfs-utils -y 
+
 echo "--- Join as worker node "
-sudo sh /data/cluster-ubuntu/kubeadm_join_cmd.sh
+sudo chmod +x /data/cluster-centos7/kubeadm_join_cmd.sh
+sudo sh /data/cluster-centos7/kubeadm_join_cmd.sh
 
 SCRIPT
 
@@ -247,6 +247,9 @@ echo "--- Executing script init_proxy"
 
 echo "--- Login onto nfs node and install nfs server"
 
+echo "--- Install nfs common package for Storage"
+sudo yum install nfs-utils -y 
+
 sudo chkconfig nfs on
 sudo service rpcbind start
 sudo service nfs start
@@ -263,7 +266,6 @@ sudo chown nobody:nobody /nfs/kubedata
 echo "--- Update exports file"
 sudo tee -a /etc/exports << EOF
 /nfs/kubedata    *(rw,sync,no_subtree_check,no_root_squash,no_all_squash,insecure)
-## /nfs/general  192.168.205.44(rw,sync,no_subtree_check)
 EOF
 
 sudo exportfs -a
@@ -311,7 +313,7 @@ Vagrant.configure("2") do |config|
 	  
 	  srv.vm.provision "shell", inline: <<-SHELL
 	     echo "--- Updating yum packages"
-         sudo yum update -y 2>&1 | tee -a /data/cluster-centos7/init_master.log
+         sudo yum update -y 2>&1 | sudo tee -a /data/cluster-centos7/init_master.log
          echo "creating installation directory"
 		 [ -d /data/cluster-centos7 ] || sudo mkdir -p /data/cluster-centos7/
       SHELL

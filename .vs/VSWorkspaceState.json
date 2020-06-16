@@ -1,12 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\cluster-centos-base",
-    "\\cluster-centos-boot",
+    "\\cluster-centos-single-master",
     "\\cluster-ubuntu-single-master",
     "\\extra",
     "\\management"
   ],
-  "SelectedNode": "\\cluster-centos-boot\\Vagrantfile",
+  "SelectedNode": "\\extra\\.helper_pod.txt",
   "PreviewInSolutionExplorer": false
 }
