@@ -5,10 +5,6 @@ echo "--- Checking vagrant plugin"
 echo "--- provisioning cluster"
 vagrant up
 
-echo "--- Updating service file"
-vagrant ssh master.qa.kube.io -- -t "sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab; sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' \/usr\/lib\/systemd\/system\/kubelet.service.d\/10-kubeadm.conf"
-vagrant ssh worker.qa.kube.io -- -t "sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab; sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' \/usr\/lib\/systemd\/system\/kubelet.service.d\/10-kubeadm.conf"
-
 echo "Copying config from cluster"
 cp ../data/cluster-centos7/config ~/.kube/
 

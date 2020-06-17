@@ -14,8 +14,8 @@ $install_docker = <<-SCRIPT
 echo "--- Executing script install_docker" 
 
 echo "--- Installing docker util packages"
-sudo yum install -y yum-utils device-mapper-persistent-data lvm2 | tee -a /data/cluster-centos7/init_master.log
-sudo yum install -y ca-certificates curl net-tools 2>&1 | tee -a /data/cluster-centos7/init_master.log
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2 | tee -a /data/$cluster/init_master.log
+sudo yum install -y ca-certificates curl net-tools 2>&1 | tee -a /data/$cluster/init_master.log
 
 
 echo "--- Add Docker’s official GPG key"
@@ -100,14 +100,10 @@ echo "IPADDR_ENP0S8 $IPADDR_ENP0S8"
 echo "HOST_NAME $HOST_NAME"
 
 echo "--- Disable Swap "
-
 sudo swapoff -a
-sudo sed -i '/ swap /s/^\(.*\)$/#\1/g' /etc/fstab
+sudo sed -i  '/ swap / s~^~#~g' /etc/fstab
 
-echo "--- Update Kube Config file for removing bootstrap file and cgroup driver"
-
-sudo sed -i 's/--bootstrap-kubeconfig=\/etc\/kubernetes\/bootstrap-kubelet.conf//' /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
-
+echo "--- update cgroup driver"
 echo "Environment=\"cgroup-driver=systemd\"" | sudo tee -a /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 echo "Environment=\"KUBELET_EXTRA_ARGS=--node-ip=$IPADDR_ENP0S8\"" | sudo tee -a /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
@@ -128,11 +124,10 @@ echo "--- update firewall to allow connection if enabled"
 #sudo firewall-cmd –-reload
 
 echo "--- update bridge-nf-call-iptables"
+echo "net.bridge.bridge-nf-call-iptables = 1" | sudo tee -a /etc/sysctl.conf
+sudo sysctl --system
 
-sudo tee /proc/sys/net/bridge/bridge-nf-call-iptables << EOF
- 1
-EOF
-
+echo "--- Virtual Extensible LAN (VxLAN) "
 sudo modprobe br_netfilter
 
 SCRIPT
@@ -150,10 +145,13 @@ HOST_NAME=$(hostname -f)
 IPADDR_ENP0S8=$(ifconfig eth1 | grep inet | grep broadcast | awk '{print $2}')
 
 echo "--- Initialise kubeadm"
-sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8 --apiserver-cert-extra-sans=$IPADDR_ENP0S8  --node-name $HOST_NAME  --pod-network-cidr 10.10.0.0/16 --service-cidr  10.150.0.0/16  2>&1 | tee -a /data/cluster-centos7/init_master.log
+sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8 --apiserver-cert-extra-sans=$IPADDR_ENP0S8  --node-name $HOST_NAME  --pod-network-cidr 10.10.0.0/16 --service-cidr  10.150.0.0/16  2>&1 | tee -a /data/$cluster/init_master.log
+
+echo "--- create dummy bootstart if not exist"
+[ -f /etc/kubernetes/bootstrap-kubelet.conf ] || sudo touch /etc/kubernetes/bootstrap-kubelet.conf
 
 echo "--- Export token for Worker Node"
-sudo kubeadm token create --print-join-command > /data/cluster-centos7/kubeadm_join_cmd.sh
+sudo kubeadm token create --print-join-command > /data/$cluster/kubeadm_join_cmd.sh
 
 SCRIPT
 
@@ -178,7 +176,7 @@ echo "--- Matser node is Ready"
 echo "`sudo kubectl get nodes`"
 
 echo "--- Copy kube config to shared kubeadm install path"
-sudo cp /etc/kubernetes/admin.conf /data/cluster-centos7/config
+sudo cp /etc/kubernetes/admin.conf /data/$cluster/config
 
 SCRIPT
 
@@ -191,8 +189,11 @@ echo "--- Install nfs common package for Storage"
 sudo yum install nfs-utils -y 
 
 echo "--- Join as worker node "
-sudo chmod +x /data/cluster-centos7/kubeadm_join_cmd.sh
-sudo sh /data/cluster-centos7/kubeadm_join_cmd.sh
+sudo chmod +x /data/$cluster/kubeadm_join_cmd.sh
+sudo sh /data/$cluster/kubeadm_join_cmd.sh
+
+echo "--- create dummy bootstart if not exist"
+[ -f /etc/kubernetes/bootstrap-kubelet.conf ] || sudo touch /etc/kubernetes/bootstrap-kubelet.conf
 
 SCRIPT
 
@@ -312,10 +313,16 @@ Vagrant.configure("2") do |config|
       end
 	  
 	  srv.vm.provision "shell", inline: <<-SHELL
-	     echo "--- Updating yum packages"
-         sudo yum update -y 2>&1 | sudo tee -a /data/cluster-centos7/init_master.log
+	     
+		 echo "set env variable"
+		 echo cluster=cluster-centos7 | sudo tee -a /etc/environment 
+		 . /etc/environment 
+		 
+		 echo "--- Updating yum packages"
+         sudo yum update -y 2>&1 | sudo tee -a /data/$cluster/init_master.log
+
          echo "creating installation directory"
-		 [ -d /data/cluster-centos7 ] || sudo mkdir -p /data/cluster-centos7/
+		 [ -d /data/$cluster ] || sudo mkdir -p /data/$cluster/
       SHELL
 	
 	  if servers["name"].include? "master" then

@@ -1,11 +1,13 @@
 {
   "ExpandedNodes": [
     "",
+    "\\cluster-centos-base",
     "\\cluster-centos-single-master",
     "\\cluster-ubuntu-single-master",
+    "\\data\\cluster-centos7",
     "\\extra",
     "\\management"
   ],
-  "SelectedNode": "\\extra\\.helper_pod.txt",
+  "SelectedNode": "\\cluster-centos-base\\preconfig.sh",
   "PreviewInSolutionExplorer": false
 }
