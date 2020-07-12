@@ -8,8 +8,10 @@ vagrant halt
 
 vagrant box list
 
-vagrant package --output ../../../kubebox-17.box
+#vagrant package --output ../../../kubernetes-masterv17.box
+vagrant package --output ../../../kubernetes-workerv17.box
 
-vagrant box add ../../../kubebox-17.box --name kubebox17
+#vagrant box add ../../../kubernetes-masterv17.box --name kubernetes-masterv17
+vagrant box add ../../../kubernetes-workerv17.box --name kubernetes-workerv17
 
 vagrant box list
