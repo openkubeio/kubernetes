@@ -3,7 +3,6 @@
 #-- http://blog.dixo.net/2015/05/setting-up-a-secure-etcd-cluster/
 #-- https://sadique.io/blog/2016/11/11/setting-up-a-secure-etcd-cluster-behind-a-proxy/
 #-- http://dockerlabs.collabnix.com/kubernetes/beginners/Install-and-configure-a-multi-master-Kubernetes-cluster-with-kubeadm.html
-
 #-- https://github.com/etcd-io/etcd/issues/9917
 
 
