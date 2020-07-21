@@ -1,12 +1,12 @@
 ---
 - name: master.st.kube.io
-  box: kubernetes-masterv17
+  box: centos/7
   cpus: 2
   memory: 1024
   ip: 192.168.205.51
   port: 10122
 - name: worker.st.kube.io
-  box: kubernetes-workerv17
+  box: centos/7
   cpus: 2
   memory: 2024
   ip: 192.168.205.52

@@ -79,15 +79,18 @@ Vagrant.configure("2") do |config|
 	  # Remove trailing \r character that causes this error if ile is edited on windows
       # sudo sed -i 's/\r$//' docker.sh  kubeadm.sh  preconfig.sh cleanup.sh
 	  sudo sed -i 's#\r$##g' /vagrant/*.sh
-
-	  # update executable
-	  sudo chmod +x /vagrant/*.sh
 	  
-	  sudo sh /vagrant/docker.sh
-	  sudo sh /vagrant/kubeadm.sh
-	  sudo sh /vagrant/preconfig.sh
-	  #sudo sh /vagrant/haproxy.sh
-	  #sudo sh /vagrant/nfs.sh
+	  # update executable
+	  sudo chmod 755 /vagrant/*.sh
+	  
+	  #copy to unmount space
+	  sudo cp -p  /vagrant/*.sh /.
+  
+	  sudo sh /docker.sh
+	  sudo sh /kubeadm.sh
+	  sudo sh /preconfig.sh
+#     sudo sh /haproxy.sh
+#     sudo sh /nfs.sh
 	  
     SHELL
 end
