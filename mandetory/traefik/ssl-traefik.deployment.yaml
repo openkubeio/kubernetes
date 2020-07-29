@@ -31,7 +31,7 @@ spec:
       containers:
       - args:
         - --configfile=/config/traefik.toml
-        image: traefik:1.7.20
+        image: traefik:1.7.20           ####traefik:v2.0,v2.2,1.7.20 
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
@@ -72,15 +72,15 @@ spec:
           name: config
         - mountPath: /ssl
           name: ssl
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/proxy
-                operator: In
-                values:
-                - proxy
+#      affinity:
+#        nodeAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            nodeSelectorTerms:
+#            - matchExpressions:
+#              - key: node-role.kubernetes.io/proxy
+#                operator: In
+#                values:
+#                - proxy
       serviceAccount: ssl-traefik
       serviceAccountName: ssl-traefik
       volumes:

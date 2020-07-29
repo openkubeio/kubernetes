@@ -15,10 +15,13 @@ Member 2be1eb8f84b7f63e added to cluster ef37ad9dc622a7c4
 
 1
 2
-kubectl label nodes worker1 node-role.kubernetes.io/master=
-kubectl taint nodes worker1 node-role.kubernetes.io/master=:NoSchedule
+kubectl label nodes worker.qa.kube.io node-role.kubernetes.io/master=
+kubectl taint nodes worker.qa.kube.io node-role.kubernetes.io/master=:NoSchedule
 
 https://codefresh.io/kubernetes-tutorial/recover-broken-kubernetes-cluster/
 
 
 
+ kubectl label node worker.qa.kube.io  node-role.kubernetes.io/management-
+ 
+ 

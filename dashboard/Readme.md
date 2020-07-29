@@ -41,5 +41,7 @@ $ kubect get svc -n kubernetes-dashboard
 Access using node port as https://worker-node:node-port/
 
 
+To intall heapster
+https://docs.giantswarm.io/guides/kubernetes-heapster/
 
 
