@@ -1,10 +1,10 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: backup
+  name: backup-cron
   namespace: kube-system
 spec:
-  schedule: "*/1 * * * *"
+  schedule: "*/2 * * * *"
   jobTemplate:
     spec:
       template:
@@ -25,17 +25,18 @@ spec:
               name: backup
           restartPolicy: OnFailure
           hostNetwork: true
+          nodeSelector:
+            master: "true"
           tolerations:
-#          - effect: NoExecute
-#            operator: Exists
           - key: node-role.kubernetes.io/master
+            operator: Exists
             effect: NoSchedule
           volumes:
           - name: etcd-certs
             hostPath:
               path: /etc/kubernetes/pki/etcd
-              type: DirectoryOrCreate
+              type: Directory
           - name: backup
             hostPath:
-              path: /data/backup
+              path: /backup
               type: DirectoryOrCreate

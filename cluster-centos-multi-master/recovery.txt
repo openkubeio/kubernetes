@@ -1,5 +1,31 @@
 kubectl get cs
 
+kubectl get pod -n kube-system | grep etcd
+
+kubectl exec -it -n kube-system etcd-master -- etcdctl version
+
+kubectl exec -it -n kube-system etcd-master -- sh
+
+etcdctl version
+
+etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key  member list
+
+etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /etcd-snapshot-$(date +%Y-%m-%d_%H:%M:%S_%Z).db
+
+etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key get /registry 
+
+kubectl exec -n kube-system  etcd-master -- sh -c "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernete
+s/pki/etcd/ca.crt --key=/etc/kubernetes/pki/etcd/server.key --cert=/etc/kubernetes/pki/etcd/server.crt  member list"
+
+kubectl exec -n kube-system  etcd-master -- sh -c "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save  /etc/kubernetes/pki/etcd/etcd-snapshot-$(date +%Y-%m-%d_%H:%M:%S_%Z).db"
+
+kubectl exec -n kube-system  etcd-master -- sh -c  "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /data/backup/etcd-snapshot-$(date +%Y-%m-%d_%H:%M:%S_%Z).db"
+ 
+
+==================================================================================================
+
+
+ 
 etcdctl --endpoints=http://127.0.0.1:2379 member list
 10b576500ed3ae71: name=kube-etcd-1 peerURLs=https://10.0.0.1:2380 clientURLs=https://10.0.0.1:2379 isLeader=false
 30bcb5f2f4c17805: name=kube-etcd-2 peerURLs=https://10.0.0.2:2380 clientURLs=https://10.0.0.2:2379 isLeader=false
@@ -25,3 +51,5 @@ https://codefresh.io/kubernetes-tutorial/recover-broken-kubernetes-cluster/
  kubectl label node worker.qa.kube.io  node-role.kubernetes.io/management-
  
  
+ 
+ 82405 27737  Sourabh Naskar
