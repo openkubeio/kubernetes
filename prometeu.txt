@@ -1,0 +1,5 @@
+https://platform9.com/blog/kubernetes-monitoring-at-scale-with-prometheus-and-cortex/
+https://github.com/helm/charts/tree/master/stable/prometheus-operator
+
+https://signoz.io/blog/ha-prometheus-cortex-cassandra/
+https://www.cncf.io/blog/2018/12/18/cortex-a-multi-tenant-horizontally-scalable-prometheus-as-a-service/

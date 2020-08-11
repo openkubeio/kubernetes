@@ -17,12 +17,21 @@ etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.
 kubectl exec -n kube-system  etcd-master -- sh -c "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernete
 s/pki/etcd/ca.crt --key=/etc/kubernetes/pki/etcd/server.key --cert=/etc/kubernetes/pki/etcd/server.crt  member list"
 
-kubectl exec -n kube-system  etcd-master -- sh -c "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save  /etc/kubernetes/pki/etcd/etcd-snapshot-$(date +%Y-%m-%d_%H:%M:%S_%Z).db"
-
 kubectl exec -n kube-system  etcd-master -- sh -c  "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /data/backup/etcd-snapshot-$(date +%Y-%m-%d_%H:%M:%S_%Z).db"
  
 
 ==================================================================================================
+
+mkdir -p /var/lib/etcd
+docker run --rm -v '/mnt:/backup' -v '/var/lib/etcd:/var/lib/etcd' --env ETCDCTL_API=3 'k8s.gcr.io/etcd-amd64:3.1.12' \
+/bin/sh -c "etcdctl snapshot restore '/backup/etcd-snapshot-2018-05-24_21:54:03_UTC.db' ; mv /default.etcd/member/ /var/lib/etcd/"
+
+
+kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd
+
+sudo kubeadm init --control-plane-endpoint "proxy.ha.kube.io:6443" --upload-certs 
+
+=================================================================================================
 
 
  

@@ -10,7 +10,7 @@ echo "setup node ip in kubelet"
 echo "Environment=\"KUBELET_EXTRA_ARGS=--node-ip=$IPADDR_ENP0S8\"" | sudo tee -a /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 echo "--- Initialise kubeadm"
-sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8  --apiserver-cert-extra-sans=$IPADDR_ENP0S8  --node-name $HOST_NAME  --pod-network-cidr 10.10.0.0/16 --service-cidr  10.150.0.0/16  2>&1 | tee -a /data/$cluster/init_master.log
+sudo kubeadm init  --apiserver-advertise-address=$IPADDR_ENP0S8  --apiserver-cert-extra-sans=$IPADDR_ENP0S8  --node-name $HOST_NAME  --pod-network-cidr 10.10.0.0/16 --service-cidr  10.150.0.0/16  2>&1 | tee -a $data_dir/init_master.log
 
 
 echo "--- Setup kubectl for vagrant user"
@@ -31,8 +31,8 @@ sudo kubectl get nodes
 #[ -f /etc/kubernetes/bootstrap-kubelet.conf ] || sudo touch /etc/kubernetes/bootstrap-kubelet.conf
 
 echo "--- Copy kube config to shared kubeadm install path"
-sudo cp /etc/kubernetes/admin.conf /data/$cluster/config
+sudo cp /etc/kubernetes/admin.conf $data_dir/config
 
 echo "--- Export token for Worker Node"
-sudo kubeadm token create --print-join-command > /data/$cluster/kubeadm_join_cmd.sh
+sudo kubeadm token create --print-join-command > $data_dir/kubeadm_join_cmd.sh
 

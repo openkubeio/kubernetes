@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: df-proxy
+  name: df-proxy
+  namespace: office
+spec:
+  selector:
+    matchLabels:
+      k8s-app: df-proxy
+  template:
+    metadata:
+      labels:
+        k8s-app: df-proxy
+    spec:
+#     hostNetwork: true
+      hostPID: true
+#     hostIPC: true
+      containers:
+      - command:
+        - sh 
+        - -c
+        - nsenter -t 1 -m -u -n -i sleep 3600
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        name: df-proxy
+        securityContext:
+          privileged: true
+#        securityContext: {}
+
+

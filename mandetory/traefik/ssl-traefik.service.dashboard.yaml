@@ -6,7 +6,7 @@ metadata:
     chart: traefik-1.86.1
     release: ssl-traefik
   name: ssl-traefik-dashboard
-  namespace: traefik-ingress
+  namespace: traefik
 spec:
   ports:
   - name: dashboard-http
@@ -17,6 +17,5 @@ spec:
     app: traefik
     chart: traefik-1.86.1
     release: ssl-traefik
-  sessionAffinity: None
   type: ClusterIP
 

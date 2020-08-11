@@ -1,7 +1,7 @@
 echo "--- docker.sh in execution" 
 
 echo "---update yum packages"
-sudo yum update -y 
+
 sudo yum install -y yum-utils device-mapper-persistent-data lvm2 ca-certificates
 
 echo "--- Add Docker’s official GPG key"

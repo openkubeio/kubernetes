@@ -6,10 +6,10 @@ metadata:
     chart: traefik-1.86.1
     release: ssl-traefik
   name: ssl-traefik-dashboard
-  namespace: traefik-ingress
+  namespace: traefik
 spec:
   rules:
-  - host: traefik.dv.kube.io
+  - host: traefik.openkube.io
     http:
       paths:
       - backend:

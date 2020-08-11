@@ -17,11 +17,11 @@ echo "installing version $(curl -s https://packages.cloud.google.com/apt/dists/k
 echo "--- Installing Kubeadm and kubelet - version 1.17.0"
 sudo yum install -y kubeadm-1.17.3 kubelet-1.17.3 kubectl-1.17.3 
 
-#echo "--- enable kubelet service"
-#sudo systemctl enable kubelet
-
 echo "--- verifying kubelet version "
 sudo kubelet --version
 
 echo "--- verifying kubeadm version "
 sudo kubeadm version
+
+echo "--- enable kubelet service"
+sudo systemctl disable kubelet

@@ -1,13 +1,25 @@
 ---
-- name: master.st.kube.io
-  box: centos/7
-  cpus: 2
-  memory: 1024
-  ip: 192.168.205.51
-  port: 10122
-- name: worker.st.kube.io
-  box: centos/7
+- name: testnode0.st.openkube.io
+  box: openkube-centos7
   cpus: 2
   memory: 2024
-  ip: 192.168.205.52
+  ip: 192.168.100.90
+  port: 10122
+- name: testnode1.st.openkube.io
+  box: openkube-centos7
+  cpus: 1
+  memory: 1024
+  ip: 192.168.100.100
+  port: 10122
+- name: testnode2.st.openkube.io
+  box: openkube-centos7
+  cpus: 2
+  memory: 2024
+  ip: 192.168.100.102
+  port: 10122
+- name: testnode3.st.openkube.io
+  box: openkube-centos7
+  cpus: 2
+  memory: 2024
+  ip: 192.168.100.103
   port: 10122

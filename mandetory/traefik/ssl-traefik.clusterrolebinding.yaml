@@ -9,4 +9,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: ssl-traefik
-  namespace: traefik-ingress
+  namespace: traefik
