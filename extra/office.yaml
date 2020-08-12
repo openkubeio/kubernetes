@@ -27,6 +27,6 @@ spec:
         name: df-proxy
         securityContext:
           privileged: true
-#        securityContext: {}
+#       securityContext: {}
 
 

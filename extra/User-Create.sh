@@ -12,9 +12,15 @@ metadata:
   namespace: office
   name: deployment-manager
 rules:
-- apiGroups: ["*"]
+- apiGroups: ["", "extensions", "apps"]
   resources: ["deployments", "replicasets", "pods"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "exec"] # You can also use ["*"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"] # You can also use ["*"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]  
 EOF
 
 cat <<EOF | kubectl apply -f -
@@ -25,7 +31,7 @@ metadata:
   namespace: office
 subjects:
 - kind: User
-  name: employee
+  name: employee  
   apiGroup: ""
 roleRef:
   kind: Role
