@@ -22,3 +22,6 @@ kubectl config set-context employee-context --cluster=kubernetes --namespace=off
 kubectl config use-context employee-context
 
 kubectl auth can-i use podsecuritypolicy/restrict-root
+
+
+https://capstonec.com/hands-on-with-kubernetes-pod-security-policies/

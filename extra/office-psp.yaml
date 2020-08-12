@@ -8,7 +8,7 @@ rules:
   resources: ['podsecuritypolicies']
   verbs: ['use']
   resourceNames:
-  - restrict-root # the psp we are giving access to
+  - psp-restricted # the psp we are giving access to
 ---
 ---
 # This applies psp/restricted to all authenticated users
@@ -19,13 +19,15 @@ metadata:
   namespace: office
 subjects:
 # Authorize all service accounts in a namespace:
-- kind: Group
-  apiGroup: rbac.authorization.k8s.io
-  name: system:serviceaccounts
+#- kind: Group
+#  apiGroup: rbac.authorization.k8s.io
+#  name: system:serviceaccounts
 # Or equivalently, all authenticated users in a namespace:
 #- kind: Group
 #  apiGroup: rbac.authorization.k8s.io
 #  name: system:authenticated
+- kind: User
+  name: employee
 roleRef:
   kind: Role
   name: psp:restricted # A references to the role above

@@ -4,8 +4,9 @@ metadata:
   labels:
     k8s-app: df-proxy
   name: df-proxy
-  namespace: office
+#  namespace: office
 spec:
+  replicas: 1
   selector:
     matchLabels:
       k8s-app: df-proxy
@@ -27,6 +28,6 @@ spec:
         name: df-proxy
         securityContext:
           privileged: true
-#       securityContext: {}
+#     securityContext: {}
 
 
