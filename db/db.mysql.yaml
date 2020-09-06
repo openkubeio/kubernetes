@@ -44,7 +44,7 @@ spec:
       volumes:
       - name: mysql-data
         hostPath:
-          path: /data3/db/mysql
+          path: /data/db/mysql
           type: DirectoryOrCreate
       - name: mysql-config
         configMap:

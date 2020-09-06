@@ -2,9 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    k8s-app: df-proxy
-  name: df-proxy
-#  namespace: office
+    k8s-app: office
+  name: office
 spec:
   replicas: 1
   selector:

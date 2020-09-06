@@ -25,3 +25,5 @@ kubectl auth can-i use podsecuritypolicy/restrict-root
 
 
 https://capstonec.com/hands-on-with-kubernetes-pod-security-policies/
+
+https://kubernetes.io/blog/2017/10/using-rbac-generally-available-18/

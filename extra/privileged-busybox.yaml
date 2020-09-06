@@ -7,7 +7,7 @@ metadata:
 #  namespace: office
 spec:
 # hostNetwork: true
-  hostPID: true
+#  hostPID: true
 # hostIPC: true
   containers:
   - command:
@@ -17,8 +17,8 @@ spec:
     image: busybox
     imagePullPolicy: IfNotPresent
     name: df-proxy
-    securityContext:
-      privileged: true
+#    securityContext:
+#      privileged: true
 # securityContext: {}
   
 

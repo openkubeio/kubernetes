@@ -1,11 +1,11 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
-  name: privileged-psp-systm-authenticated
+  name: psp-privileged-system-authenticated
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: privileged-psp
+  name: psp-privileged
 subjects:
   - kind: Group
     apiGroup: rbac.authorization.k8s.io

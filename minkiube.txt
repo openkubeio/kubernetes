@@ -1,0 +1,68 @@
+minikube start --driver=virtualbox
+
+=========================
+
+minikube ssh
+ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip)
+
+=========================
+
+# Start minikube
+minikube start
+
+# Set docker env
+eval $(minikube docker-env)
+
+# Build image
+docker build -t foo:0.0.1 .
+
+# Run in minikube
+kubectl run hello-foo --image=foo:0.0.1 --image-pull-policy=Never
+
+# Check that it's running
+kubectl get pods
+
+===========================
+
+Use a local registry:
+
+docker run -d -p 5000:5000 --restart=always --name registry registry:2
+Now tag your image properly:
+
+docker tag ubuntu localhost:5000/ubuntu
+Note that localhost should be changed to dns name of the machine running registry container.
+
+Now push your image to local registry:
+
+docker push localhost:5000/ubuntu
+You should be able to pull it back:
+
+docker pull localhost:5000/ubuntu
+
+https://stackoverflow.com/questions/42564058/how-to-use-local-docker-images-with-minikube#:~:text=Set%20the%20environment%20variables%20with,try%20to%20download%20the%20image
+
+===========================
+
+minikube start --driver=virtualbox  --mount-string='D:\openkubeio\data:/data-dir' --mount=true --extra-config=apiserver.service-node-port-range=1-33000  --cpus=2 --memory=3096
+
+minikube mount D:/openkubeio/data:/data  --uid='root' --gid='root'  --mode=777
+
+nohup minikube mount /d/openkubeio/data:/data  --uid='root'  --gid='root'  --mode=777 &
+ 
+minikube docker-env
+
+eval $(minikube docker-env)
+
+===========================
+
+https://github.com/elastic/helm-charts/tree/master/elasticsearch
+
+https://github.com/elastic/helm-charts/blob/master/elasticsearch/examples/security/Makefile
+
+https://github.com/elastic/helm-charts/blob/e6771f4b8b26c163433bd171e490d28dd77de75c/elasticsearch/examples/security/security.yml#L35-L38
+
+https://hub.helm.sh/charts/bitnami/elasticsearch
+
+http://localhost:8001/api/v1/namespaces/traefik/services/ssl-traefik-dashboard/proxy/
+
+http://localhost:8001/api/v1/namespaces/traefik/services/http:ssl-traefik-dashboard:80/proxy/dashboard/

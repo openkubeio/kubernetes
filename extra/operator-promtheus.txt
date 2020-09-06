@@ -1,0 +1,12 @@
+kubectl create ns monitor
+
+helm install prometheus-operator stable/prometheus-operator --version  9.3.1  --namespace monitor \
+	--set alertmanager.enabled=false \
+	--set nodeExporter.enabled=false \
+	--set grafana.enabled=false \
+	--set prometheus.ingress.enabled=true \
+	--set prometheus.ingress.hosts={"prometheus.dev.openkube.io"} \
+	--set prometheus.prometheusSpec.replicas=2
+
+
+helm delete prometheus-operator --namespace monitor

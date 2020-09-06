@@ -13,5 +13,8 @@ spec:
       - "3600"
     imagePullPolicy: IfNotPresent
     name: busybox
+    env:
+    - name: TZ
+      value: America/New_York
   restartPolicy: Always
 EOF

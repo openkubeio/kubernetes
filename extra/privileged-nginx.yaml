@@ -6,5 +6,5 @@ spec:
   containers:
     - name:  privileged-nginx
       image: nginx
-      securityContext:
-        privileged: true
+#      securityContext:
+#        privileged: true

@@ -3,3 +3,18 @@ https://github.com/helm/charts/tree/master/stable/prometheus-operator
 
 https://signoz.io/blog/ha-prometheus-cortex-cassandra/
 https://www.cncf.io/blog/2018/12/18/cortex-a-multi-tenant-horizontally-scalable-prometheus-as-a-service/
+
+
+
+https://github.com/cortexproject/cortex#:~:text=Cortex%20is%20a%20CNCF%20incubation,a%20Prometheus%2Dcompatible%20query%20API.
+
+
+https://cortexmetrics.io/docs/production/cassandra/
+
+
+
+
+=========================
+https://opensource.com/article/19/8/how-set-apache-cassandra-cluster
+
+https://blog.ziviani.com.br/monitoring-at-scale/

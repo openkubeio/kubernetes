@@ -1,0 +1,9 @@
+https://github.com/nginxinc/kubernetes-ingress/blob/master/examples/complete-example/cafe.yaml
+https://medium.com/faun/setting-up-ssl-certificates-for-nginx-in-docker-environ-e7eec5ebb418
+https://www.ibm.com/support/knowledgecenter/SSYHZ8_18.0.x/com.ibm.dba.bai/topics/tsk_bai_security_tls_certifs_for_ingress.html
+https://github.com/nginxinc/kubernetes-ingress/blob/master/examples/complete-example/cafe.yaml
+
+
+https://scmquest.com/nginx-docker-container-with-https-protocol/
+
+https://docs.cloud.oracle.com/en-us/iaas/Content/ContEng/Tasks/contengsettingupingresscontroller.htm

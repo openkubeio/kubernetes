@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ssl
+  labels: 
+    k8s-app: nginx-ssl
+spec:
+  replicas: 1
+  selector: 
+    matchLabels: 
+      k8s-app: nginx-ssl
+  template: 
+    metadata: 
+      labels: 
+        k8s-app: nginx-ssl
+    spec:
+      containers:
+      - name: nginx-ssl
+        image: pramodepandit/nginx-ssl:v2
+        ports:
+        - containerPort: 443
+          name: https
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ssl
+  labels:
+    k8s-app: nginx-ssl
+spec:
+  ports:
+  - port: 443
+    name: https
+    targetPort: 443
+  selector:
+    k8s-app: nginx-ssl
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine
+  labels:
+    app: alpine
+spec:
+  containers:
+  - image: pramodepandit/alpine:3.12
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    name: alpine
+  restartPolicy: Always
+---
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-ssl
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/ssl-passthrough: "false"
+    kubernetes.io/secure-backends: "true"
+spec:
+  tls:
+  - secretName: nginx-ssl-tls-ca
+    hosts:
+      - nginx.dev.openkube.io
+  rules:
+  - host: nginx.dev.openkube.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx-ssl
+          servicePort: 443
+---
+
+
+## kubectl proxy
+## http://localhost:8001/api/v1/namespaces/default/services/https:nginx-ssl:443/proxy/sample.html
+## 
+##  kubectl exec -it alpine -- echo quit | openssl s_client -showcerts -connect nginx-ssl.default.svc.cluster.local:443 > cacert.crt
+##  
+##  kubectl exec -it alpine -- curl -v --cacert cacert.crt https://nginx-ssl:443/sample.html
+ 
+#  kubectl -n default create secret generic nginx-ssl-tls-ca --from-file=cacert.crt=./cacert.crt
