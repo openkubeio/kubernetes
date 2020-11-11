@@ -23,7 +23,7 @@
 	Bind the tiller serviceaccount to the cluster-admin role:
 	$ kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 	
-	Init helma and install tiller 	
+	Init helm and install tiller 	
 	$ helm init --service-account tiller --wait --debug
 	
 	Secure Helm
@@ -37,7 +37,7 @@
 
 ###	Helm setup
 	$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-    	$ helm install --name my-tomcat --namespace dev stable/tomcat
+	$ helm install --name my-tomcat --namespace dev stable/tomcat
 	$ helm delete my-release
 	
 
