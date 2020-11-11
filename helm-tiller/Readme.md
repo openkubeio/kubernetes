@@ -37,9 +37,13 @@
 
 ###	Helm setup
 	$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-	newer version of stable helm chart
-	$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-	$ helm install --name my-tomcat --namespace dev stable/tomcat
+	
+	** Newer version of stable helm chart **
+	
+	$ helm repo add stable https://charts.helm.sh/stable/
+	
+	$ helm install my-tomcat --namespace dev stable/tomcat
+	
 	$ helm delete my-tomcat
 	
 
