@@ -38,7 +38,7 @@
 ###	Helm setup
 	$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 	$ helm install --name my-tomcat --namespace dev stable/tomcat
-	$ helm delete my-release
+	$ helm delete my-tomcat
 	
 
 ###	Using Helm chart offline
