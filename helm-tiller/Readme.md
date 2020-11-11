@@ -38,7 +38,7 @@
 ###	Helm setup
 	$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 	
-	** Newer version of stable helm chart **
+	Newer version of stable helm chart
 	
 	$ helm repo add stable https://charts.helm.sh/stable/
 	
