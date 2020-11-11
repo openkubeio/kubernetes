@@ -1,4 +1,4 @@
-#   Installing Helm
+###   Installing Helm
 
 	$ cd /tmp
 	$ curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > install-helm.sh
@@ -9,10 +9,10 @@
 		helm installed into /usr/local/bin/helm
 		Run 'helm init' to configure helm.
 		
-#	For Downloading binaries for specific release
-#   https://github.com/helm/helm/releases
+###	For Downloading binaries for specific release
+	https://github.com/helm/helm/releases
 
-#   	
+ 	
 #   Installing Tiller
 
 #	Create the tiller serviceaccount:
