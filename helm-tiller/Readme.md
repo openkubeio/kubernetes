@@ -12,26 +12,25 @@
 ###	For Downloading binaries for specific release
 	https://github.com/helm/helm/releases
 
- 	
-#   Installing Tiller
-
-#	Create the tiller serviceaccount:
-
+###	For Helm version > 3.0
+	helm init
+	
+###	For Helm version < 3.0
+	
+	Create the tiller serviceaccount:
 	$ kubectl -n kube-system create serviceaccount tiller
 
-#	Bind the tiller serviceaccount to the cluster-admin role:
-
+	Bind the tiller serviceaccount to the cluster-admin role:
 	$ kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 	
-#	Installs Tiller on our cluster
-	
+	Init helma and install tiller 	
 	$ helm init --service-account tiller --wait
 	
-#	Secure Helm https://engineering.bitnami.com/articles/helm-security.html
-	
+	Secure Helm https://engineering.bitnami.com/articles/helm-security.html
 	$ kubectl patch deployment tiller-deploy --namespace=kube-system --type=json --patch='[{"op": "add", "path": "/spec/template/spec/containers/0/command", "value": ["/tiller", "--listen=localhost:44134"]}]'
 	
-#	
+	
+	
 #   Using Helm
 
 	$ helm version
