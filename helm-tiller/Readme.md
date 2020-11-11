@@ -51,6 +51,9 @@
 	$ helm install mysql  mysql-1.6.3.tgz
 	
 ###	Read Reference
-	https://zero-to-jupyterhub.readthedocs.io/en/stable/setup-helm.html
-	Secure Helm 
-	https://engineering.bitnami.com/articles/helm-security.html
+
+####  Setup Helm
+>https://zero-to-jupyterhub.readthedocs.io/en/stable/setup-helm.html
+
+####  Secure Helm 
+>https://engineering.bitnami.com/articles/helm-security.html
