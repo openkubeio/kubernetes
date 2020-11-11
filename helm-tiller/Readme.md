@@ -9,7 +9,7 @@
 		helm installed into /usr/local/bin/helm
 		Run 'helm init' to configure helm.
 		
-###	For Downloading binaries for specific release
+###	Downloading helm binaries for specific release
 	https://github.com/helm/helm/releases
 
 ###	For Helm version > 3.0
@@ -24,36 +24,33 @@
 	$ kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 	
 	Init helma and install tiller 	
-	$ helm init --service-account tiller --wait
+	$ helm init --service-account tiller --wait --debug
 	
-	Secure Helm https://engineering.bitnami.com/articles/helm-security.html
+	Secure Helm
 	$ kubectl patch deployment tiller-deploy --namespace=kube-system --type=json --patch='[{"op": "add", "path": "/spec/template/spec/containers/0/command", "value": ["/tiller", "--listen=localhost:44134"]}]'
 	
 	
-	
-#   Using Helm
-
-	$ helm version
-	
-#	To initialize helm on another machine, you won’t need to setup tiller again
+###	Initialize helm on remote machine, client only
 	$ helm init --client-only 
 	$ helm version
 	
+
+###	Helm setup
 	$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-    $ helm install --name my-release --namespace dev stable/tomcat
+    	$ helm install --name my-tomcat --namespace dev stable/tomcat
 	$ helm delete my-release
 	
-#   Refer	https://zero-to-jupyterhub.readthedocs.io/en/stable/setup-helm.html
 
-
-#   Using Helm chart without internet
-
-    $ helm pull <chart name>
-    $ ls #The chart will be pulled as a tar to the local directory
-    $ helm install <whatever release name you want>  <chart name>.tgz
+###	Using Helm chart offline
+	$ helm pull <chart name>
+	$ ls -ltr
+	$ helm install --name my-release --namespace dev  <chart name>.tgz
 
 	$ helm pull stable/mysql
 	$ ls #  mysql-1.6.3.tgz
 	$ helm install mysql  mysql-1.6.3.tgz
-
-
+	
+###	Read Reference
+	https://zero-to-jupyterhub.readthedocs.io/en/stable/setup-helm.html
+	Secure Helm 
+	https://engineering.bitnami.com/articles/helm-security.html
