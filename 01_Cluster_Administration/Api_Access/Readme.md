@@ -9,6 +9,7 @@ kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/01_Cluster
 ```
 
 
+
 ## Access Kubernetes  APIs from outside the cluster
 
 #### Export access variables
@@ -21,12 +22,13 @@ kubectl get secret $(kubectl get sa dynatrace-monitoring -o jsonpath='{.secrets[
 ```
 #### Explore the API with TOKEN
 ```
-curl -sL --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
+curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
 
 curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/test/pods
 
 curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/dynatrace/pods
 ```
+
 
 
 ## Access Kubernetes  APIs from within a pod in cluster
