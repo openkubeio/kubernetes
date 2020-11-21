@@ -1,4 +1,4 @@
-## Create a dedicated namespace for access apis
+## Create a dedicated namespace for API Access
 
 ```
 # Create a dedicated namespace for monitoring
@@ -7,6 +7,7 @@ kubectl create ns dynatrace
 # Create service account, ClusterRole and ClusterRoleBinding
 kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/01_Cluster_Administration/Api_Access/kubernetes-monitoring-service-account.yaml
 ```
+
 
 ## Access Kubernetes  APIs from outside the cluster
 
@@ -27,11 +28,13 @@ curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APIS
 curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/dynatrace/pods
 ```
 
+
 ## Access Kubernetes  APIs from within a pod in cluster
 
 #### Create a pod running with service account
 ```
 kubectl run alpine --image=openkubeio/alpine --restart=Never --serviceaccount=dynatrace-monitoring --namespace=dynatrace 
+
 kubectl exec -it -n dynatrace alpine -- sh 
 ```
 #### Export access variables
@@ -54,6 +57,7 @@ CACERT=${SERVICEACCOUNT}/ca.crt
 #### Explore the API with TOKEN
 ```
 curl -sL --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
+
 curl -sL --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/dynatrace/pods
 ```
  
