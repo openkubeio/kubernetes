@@ -12,7 +12,7 @@ kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/02_Schedul
 ```
 =========================================================
 ### Run pods on dedicated node only
-> **Taint the nodes dedicated
+> **Taint the nodes dedicated**
 ```
 kubectl taint nodes machine-w2 dedicated=infra:NoSchedule
 node/machine-w2 tainted
