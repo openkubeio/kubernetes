@@ -34,6 +34,12 @@ machine-w2   [map[effect:NoSchedule key:dedicated value:infra]]
 
 kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/02_Scheduling/toleration-only-master.yaml
 ```
+----------------------------------------------
+
+> **Kubernetes doc reference**
+https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+
+
 
 metadata:
   annotations:
