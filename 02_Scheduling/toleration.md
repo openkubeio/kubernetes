@@ -4,7 +4,10 @@ Name         taint
 machine-m1   [map[effect:NoSchedule key:node-role.kubernetes.io/master]]
 machine-w2   <none>
 ```
-
+> **Deploy fluent pods on all nodes; master and worker**
+```
+kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/02_Scheduling/toleration-all-nodes.yaml
+```
 =========================================================
 metadata:
   annotations:
