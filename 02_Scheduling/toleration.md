@@ -9,7 +9,7 @@ machine-w2   <none>
 
 kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/02_Scheduling/toleration-all-nodes.yaml
 ```
-=========================================================
+---------------------------------------------
 
 > **Run pods on dedicated node only**
 ```
