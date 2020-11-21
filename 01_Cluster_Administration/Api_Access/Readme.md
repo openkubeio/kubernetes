@@ -1,13 +1,15 @@
-## Access Kubernetes  APIs from outside the cluster
+## Create a dedicated namespace for access apis
 
-#### Create a dedicated namespace for monitoring
 ```
+# Create a dedicated namespace for monitoring
 kubectl create ns dynatrace
-```
-#### Create service account, ClusterRole and ClusterRoleBinding
-```
+
+# Create service account, ClusterRole and ClusterRoleBinding
 kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/01_Cluster_Administration/Api_Access/kubernetes-monitoring-service-account.yaml
 ```
+
+## Access Kubernetes  APIs from outside the cluster
+
 #### Export access variables
 ```
 APISERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
@@ -16,7 +18,7 @@ TOKEN=$(kubectl get secret $(kubectl get sa dynatrace-monitoring -o jsonpath='{.
 
 kubectl get secret $(kubectl get sa dynatrace-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.ca\.crt}' -n dynatrace | base64 --decode > ca.crt
 ```
-#### Access APIs
+#### Explore the API with TOKEN
 ```
 curl -sL --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
 
@@ -30,7 +32,10 @@ curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APIS
 #### Create a pod running with service account
 ```
 kubectl run alpine --image=openkubeio/alpine --restart=Never --serviceaccount=dynatrace-monitoring --namespace=dynatrace 
-
+kubectl exec -it -n dynatrace alpine -- sh 
+```
+#### Export access variables
+```
 # Point to the internal API server hostname
 APISERVER=https://kubernetes.default.svc
 
@@ -45,8 +50,10 @@ TOKEN=$(cat ${SERVICEACCOUNT}/token)
 
 # Reference the internal certificate authority (CA)
 CACERT=${SERVICEACCOUNT}/ca.crt
-
-# Explore the API with TOKEN
-curl --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
+```
+#### Explore the API with TOKEN
+```
+curl -sL --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
+curl -sL --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/dynatrace/pods
 ```
  
