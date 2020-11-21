@@ -1,12 +1,11 @@
 ## Create a dedicated namespace for API Access
 
-> sample **sample** sample
-
-```
-# Create a dedicated namespace for monitoring
+> **Create a dedicated namespace for monitoring**
+``` 
 kubectl create ns dynatrace
-
-# Create service account, ClusterRole and ClusterRoleBinding
+```
+> **Create service account, ClusterRole and ClusterRoleBinding**
+```
 kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/01_Cluster_Administration/Api_Access/kubernetes-monitoring-service-account.yaml
 ```
 
