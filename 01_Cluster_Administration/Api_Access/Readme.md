@@ -1,6 +1,6 @@
 ## Create a dedicated namespace for API Access
 
-> **Create a dedicated namespace for monitoring**
+> **Create namespace for monitoring**
 ``` 
 kubectl create ns dynatrace
 ```
