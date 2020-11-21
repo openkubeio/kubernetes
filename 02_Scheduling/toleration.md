@@ -37,6 +37,7 @@ kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/02_Schedul
 ----------------------------------------------
 
 > **Kubernetes doc reference**
+
 https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
 
 
