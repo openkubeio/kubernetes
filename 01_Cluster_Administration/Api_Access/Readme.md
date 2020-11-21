@@ -13,7 +13,7 @@ kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/01_Cluster
 
 ## Access Kubernetes  APIs from outside the cluster
 
-#### Export access variables
+> **Export access variables**
 ```
 APISERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
 
@@ -21,7 +21,7 @@ TOKEN=$(kubectl get secret $(kubectl get sa dynatrace-monitoring -o jsonpath='{.
 
 kubectl get secret $(kubectl get sa dynatrace-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.ca\.crt}' -n dynatrace | base64 --decode > ca.crt
 ```
-#### Explore the API with TOKEN
+> **Explore the API with TOKEN**
 ```
 curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
 
