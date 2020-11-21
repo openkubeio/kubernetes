@@ -21,7 +21,7 @@ TOKEN=$(kubectl get secret $(kubectl get sa dynatrace-monitoring -o jsonpath='{.
 
 kubectl get secret $(kubectl get sa dynatrace-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.ca\.crt}' -n dynatrace | base64 --decode > ca.crt
 ```
-> **Explore the API with TOKEN**
+> **Explore API with TOKEN**
 ```
 curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
 
@@ -34,13 +34,13 @@ curl -sL --cacert ca.crt --header "Authorization: Bearer ${TOKEN}" -X GET ${APIS
 
 ## Access Kubernetes  APIs from within a pod in cluster
 
-> **Create a pod running with service account
+> **Create a pod running with service account**
 ```
 kubectl run alpine --image=openkubeio/alpine --restart=Never --serviceaccount=dynatrace-monitoring --namespace=dynatrace 
 
 kubectl exec -it -n dynatrace alpine -- sh 
 ```
-> **Export access variables
+> **Export access variables**
 ```
 # Point to the internal API server hostname
 APISERVER=https://kubernetes.default.svc
@@ -57,7 +57,7 @@ TOKEN=$(cat ${SERVICEACCOUNT}/token)
 # Reference the internal certificate authority (CA)
 CACERT=${SERVICEACCOUNT}/ca.crt
 ```
-> **Explore the API with TOKEN
+> **Explore API with TOKEN**
 ```
 curl -sL --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
 
