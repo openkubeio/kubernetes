@@ -1,18 +1,17 @@
-### Run pods on all master and worker nodes
+> **Run pods on all master and worker nodes**
 
-> **kubectl get nodes -o custom-columns=Name:.metadata.name,taint:.spec.taints**
 ```
+kubectl get nodes -o custom-columns=Name:.metadata.name,taint:.spec.taints**
+
 Name         taint
 machine-m1   [map[effect:NoSchedule key:node-role.kubernetes.io/master]]
 machine-w2   <none>
-```
-> **Deploy fluent pods on all nodes**
-```
+
 kubectl apply -f https://github.com/openkubeio/kubernetes/blob/master/02_Scheduling/toleration-all-nodes.yaml
 ```
 =========================================================
-### Run pods on dedicated node only
-> **Taint the nodes dedicated**
+
+> **Run pods on dedicated node only**
 ```
 kubectl taint nodes machine-w2 dedicated=infra:NoSchedule
 node/machine-w2 tainted
