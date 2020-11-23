@@ -1,7 +1,7 @@
 > **Run pods on all master and worker nodes**
 
 ```
-kubectl get nodes -o custom-columns=Name:.metadata.name,taint:.spec.taints**
+kubectl get nodes -o custom-columns=Name:.metadata.name,taint:.spec.taints
 
 Name         taint
 machine-m1   [map[effect:NoSchedule key:node-role.kubernetes.io/master]]
