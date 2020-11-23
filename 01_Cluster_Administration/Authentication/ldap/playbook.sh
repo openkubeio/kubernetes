@@ -16,6 +16,8 @@ test_ldap(){
 
 add_user(){
 https://github.com/osixia/docker-openldap/issues/227
+https://www.learnitguide.net/2017/11/how-to-create-ldap-users-and-groups.html
+
 cat >> user.ldif <<EOL
 dn: uid=admin,dc=example,dc=org
 uid: admin
