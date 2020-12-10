@@ -6,6 +6,13 @@
 #-- https://github.com/etcd-io/etcd/issues/9917
 
 
+Create cluster with internal etcd
+recreate token to join as maser 
+https://blog.scottlowe.org/2019/07/12/calculating-ca-certificate-hash-for-kubeadm/
+https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
+https://blog.scottlowe.org/2019/08/12/converting-kubernetes-to-ha-control-plane/
+https://blog.scottlowe.org/2019/08/12/converting-kubernetes-to-ha-control-plane/
+
 could not connect: x509: certificate signed by unknown authority (possibly because of "x509: invalid signature: parent certificate cannot sign this kind of certificate" while trying to verify candidate authority certificate * ) (prober "ROUND_TRIPPER_SNAPSHOT") 
 
 

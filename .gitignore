@@ -1,6 +1,6 @@
 **/*.log
 **/.vagrant
-data/
+**/data
 instruction.txt
 **/certs/
 .*/
