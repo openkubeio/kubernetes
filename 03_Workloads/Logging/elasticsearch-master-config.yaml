@@ -1,0 +1,30 @@
+apiVersion: v1
+data:
+  elasticsearch.yml: |
+    xpack.security.enabled: "false"
+    xpack.security.transport.ssl.enabled: "false"
+    xpack.security.transport.ssl.keystore.type: "PKCS12"
+    xpack.security.transport.ssl.verification_mode: "certificate"
+    xpack.security.transport.ssl.keystore.path: "certs/elastic-certificates.p12"
+    xpack.security.transport.ssl.truststore.path: "certs/elastic-certificates.p12"
+    xpack.security.transport.ssl.truststore.type: "PKCS12"
+    xpack.security.http.ssl.enabled: "false"
+    xpack.security.http.ssl.keystore.path: "certs/elastic-certificates.p12"
+    xpack.security.http.ssl.truststore.path: "certs/elastic-certificates.p12"
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: es-master
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2020-12-12T15:15:26Z"
+  labels:
+    app: elasticsearch-master
+    app.kubernetes.io/managed-by: Helm
+    chart: elasticsearch
+    heritage: Helm
+    release: es-master
+  name: elasticsearch-master-config
+  namespace: default
+  resourceVersion: "281243"
+  selfLink: /api/v1/namespaces/default/configmaps/elasticsearch-master-config
+  uid: 3a026c68-e768-4766-99b9-a8b5373408d1

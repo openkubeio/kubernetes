@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: data
+        emptyDir: {}
+      containers:
+      - image: nginx
+        imagePullPolicy: Always
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/nginx/html
+      initContainers: 
+      - name: init-sysctl
+        image: busybox 
+        imagePullPolicy: IfNotPresent 
+        command: ["sysctl", "-w", "vm.max_map_count=262144"] 
+        securityContext: 
+          privileged: true 
+      - name: init-create-dir 
+        image: busybox 
+        imagePullPolicy: IfNotPresent 
+        command: ["/bin/sh", "-c", "ls -ltr /"] 
+        securityContext: 
+          runAsUser: 0 
+        volumeMounts: 
+        - mountPath: "/data1/db"
+          name: data 
+      - name: init-data-check 
+        image: busybox 
+        imagePullPolicy: IfNotPresent 
+        command: ["/bin/sh", "-c", "ls -ltr"] 
+        #args: ["-c", "ls -ltr"] 
+        securityContext: 
+          runAsUser: 0 
+        volumeMounts: 
+        - mountPath: "/data/db"
+          name: data 
+      - name: init-data-permission 
+        image: busybox 
+        imagePullPolicy: IfNotPresent 
+        command: ["/bin/sh", "-c", "chown -R 1000:1000 /data/"] 
+        volumeMounts: 
+        - mountPath: "/data/db"
+          name: data 
+        securityContext: 
+          runAsUser: 0
+      - name: init-data-check2
+        image: busybox 
+        imagePullPolicy: IfNotPresent 
+        command: ["/bin/sh", "-c", "ls -ltr /data"] 
+        securityContext: 
+          runAsUser: 0 
+        volumeMounts: 
+        - mountPath: "/data/db"
+          name: data 
+      restartPolicy: Always
+      securityContext: {}
