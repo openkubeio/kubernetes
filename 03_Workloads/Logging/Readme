@@ -19,7 +19,6 @@ http://elasticsearch-client:9200/_cluster/state?pretty
 http://elasticsearch-master:9200/_cluster/state?pretty
 
 
-
 https://medium.com/@thulasya/deploy-elasticsearch-on-kubernetes-via-helm-in-google-kubernetes-cluster-da722f3a8883
 https://sematext.com/blog/kubernetes-elasticsearch/
 https://docs.portworx.com/portworx-install-with-kubernetes/application-install-with-kubernetes/elastic-search-and-kibana/
@@ -32,4 +31,9 @@ https://www.studytonight.com/post/setup-kibana-with-elastic-cluster-authenticati
 https://www.studytonight.com/post/setup-fluent-bit-with-elasticsearch-authentication-enabled-in-kubernetes
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html
+
+kubectl create secret generic elastic-certificates --from-file=elastic-certificates.p12 
+
+helm update es-master --version 7.8.1 elastic/elasticsearch --values elasticsearch.7.8.1.master.values.yaml
+
 
