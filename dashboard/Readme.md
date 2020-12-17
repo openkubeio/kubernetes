@@ -18,7 +18,7 @@ secret=$(kubectl get sa kubernetes-dashboard -n kubernetes-dashboard -o jsonpath
 
 token=$(kubectl get secret $secret -n  kubernetes-dashboard  -o jsonpath="{.data.token}")
 
-echo $token
+echo $token | base64 -d
 ```
 
 Copy token and login. After login you will have limites access to resources. To get full cluster access cretae a service account with cluster-admin role
@@ -35,13 +35,18 @@ admin_secret=$(kubectl get sa dashboard-admin -n kubernetes-dashboard -o jsonpat
 
 admin_token=$(kubectl get secret $admin_secret -n  kubernetes-dashboard  -o jsonpath="{.data.token}")
 
-echo $admin_token
+echo $admin_token | base64 -d
 ```
 Copy token and login with new token, now you should have full cluster access
 
 
-> **To intall metrics server to see dashboard metrics**
+> **To intall metrics server to see dashboard metrics  https://github.com/kubernetes-sigs/metrics-server**
 
-https://docs.giantswarm.io/guides/kubernetes-heapster/
+```
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.0/components.yaml
 
+kubectl get pods -n kube-system | grep metrics
+
+kubectl top pods
+``
 
