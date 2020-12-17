@@ -22,6 +22,7 @@ echo $token | base64 -d
 ```
 Copy token and login. After login you will have limites access to resources. To get full cluster access cretae a service account with cluster-admin role
 
+<br/>
 
 #### Create Admin user with admin role
 
@@ -38,6 +39,7 @@ echo $admin_token | base64 -d
 ```
 Copy token and login with new token, now you should have full cluster access
 
+<br/>
 
 #### To intall metrics server to see dashboard metrics  
 > https://github.com/kubernetes-sigs/metrics-server
