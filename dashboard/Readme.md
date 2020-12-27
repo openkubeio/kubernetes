@@ -49,6 +49,13 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/down
 
 kubectl get pods -n kube-system | grep metrics
 
+## Patch the deployment to skip validation of client ca cert presented by kubelet - OKAY for Dev! ##
+
+kubectl patch deploy metrics-server -n kube-system  --type='json' -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-inse
+cure-tls" }]'
+
+kubectl get deploy metrics-server -n kube-system -o jsonpath={.spec.template.spec.containers[0].args}
+
 kubectl top pods
 ```
 
