@@ -1,7 +1,7 @@
 > **Official OpenldapPHPAdmin Chart**
 
-Readme https://artifacthub.io/packages/helm/cetic/phpldapadmin <br/>
-Readme https://github.com/cetic/helm-phpLDAPadmin
+&nbsp;&nbsp;&nbsp; Readme https://artifacthub.io/packages/helm/cetic/phpldapadmin <br/>
+&nbsp;&nbsp;&nbsp; Readme https://github.com/cetic/helm-phpLDAPadmin
 ```
 helm version
 version.BuildInfo{Version:"v3.4.0", GitCommit:"", GitTreeState:"clean", GoVersion:"go1.14.10"}
