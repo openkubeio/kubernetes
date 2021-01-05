@@ -9,3 +9,7 @@ instruction.txt
 **/*.mdMY-DATA
 YOUR-FILE-WITH-SENSITIVE-DATA
 cluster-v2/
+
+
+
+**/00-default.conf.txt
