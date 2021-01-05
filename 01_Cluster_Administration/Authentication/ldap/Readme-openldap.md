@@ -1,6 +1,6 @@
 > **Official Openldap Chart**
 
-Readme https://github.com/helm/charts/tree/master/stable/openldap
+https://github.com/helm/charts/tree/master/stable/openldap
 
 ```
 helm version
