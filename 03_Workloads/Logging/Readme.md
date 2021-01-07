@@ -70,7 +70,7 @@ https://www.studytonight.com/post/setup-elasticsearch-with-authentication-xpack-
 https://www.studytonight.com/post/setup-kibana-with-elastic-cluster-authentication-xpack-security-enabled
 https://www.studytonight.com/post/setup-fluent-bit-with-elasticsearch-authentication-enabled-in-kubernetes
 https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html
-
+https://www.elastic.co/guide/en/logstash/current/ls-security.html
 
 
 
