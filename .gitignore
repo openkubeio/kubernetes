@@ -5,7 +5,7 @@ instruction.txt
 **/certs/
 .*/
 .vs/
-**/Readme.md
+## **/Readme.md
 **/*.mdMY-DATA
 YOUR-FILE-WITH-SENSITIVE-DATA
 cluster-v2/
