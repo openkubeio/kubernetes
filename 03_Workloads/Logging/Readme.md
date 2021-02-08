@@ -1,50 +1,72 @@
-Official elasticsearch helm release 
-> https://github.com/elastic/helm-charts/tree/7.8/elasticsearch
-
-
+### Official elasticsearch helm release 
+> **https://github.com/elastic/helm-charts/tree/7.8/elasticsearch**
+```
+helm repo add elastic https://helm.elastic.co
+```
 ------------------------------------------------
 
-#### setup elastic with no security enabled
+### setup elastic with no security enabled
 
+**Install file beat**
+```
+helm install es-filebeat --version 7.8.1 elastic/filebeat --values es-7.8.1-values-filebeat.yaml
+```
+**Install elasticsearch**
+```
 helm install es-master   --version 7.8.1 elastic/elasticsearch --values es-7.8.1-values-master.yaml
 
 helm install es-data     --version 7.8.1 elastic/elasticsearch --values es-7.8.1-values-data.yaml
 
 helm install es-client   --version 7.8.1 elastic/elasticsearch --values es-7.8.1-values-client.yaml
 
+```
+**Run alpine pod  and test api**
+```
+kubectl run alpine --image=openkubeio/alpine-openldap-client  --restart=Always
+
 kubectl exec alpine -- curl -sL http://elasticsearch-master:9200/_cluster/state?pretty  
 
 kubectl exec alpine -- curl -sL http://elasticsearch-client:9200/_cluster/state?pretty  
 
 kubectl exec alpine -- curl -sL http://elasticsearch-client:9200/_cat/nodes?v
-
+```
+**Install Kibana**
+```
 helm install es-kibana   --version 7.8.1 elastic/kibana   --values es-7.8.1-values-kibana.yaml
-
-helm install es-filebeat --version 7.8.1 elastic/filebeat --values es-7.8.1-values-filebeat.yaml
-
-
+```
 ---------------------------------------------
 
-#### setup elastic with security enabled
+### setup elastic with user password enabled
 
+**Install file beat**
+```
+helm install es-filebeat   --version 7.8.1 elastic/filebeat   --values es-7.8.1-values-secure-filebeat.yaml
+```
+**Install elasticsearch**
+```
 helm install es-master   --version 7.8.1 elastic/elasticsearch --values es-7.8.1-values-secure-master.yaml
 
-kubectl exec alpine -- curl -sL -u elastic:elasticelastic   http://elasticsearch-master:9200/_cluster/state?pretty   
-
-helm install es-data   --version 7.8.1 elastic/elasticsearch --values es-7.8.1-values-secure-data.yaml
+helm install es-data     --version 7.8.1 elastic/elasticsearch --values es-7.8.1-values-secure-data.yaml
 
 helm install es-client   --version 7.8.1 elastic/elasticsearch --values es-7.8.1-values-secure-client.yaml
+```
+**Run alpine pod  and test api**
+```
+kubectl run alpine --image=openkubeio/alpine-openldap-client  --restart=Always
+
+kubectl exec alpine -- curl -sL -u elastic:elasticelastic http://elasticsearch-master:9200/_cluster/state?pretty   
 
 kubectl exec alpine -- curl -sL -u elastic:elasticelastic http://elasticsearch-client:9200/_cluster/state?pretty  
 
-kubectl exec alpine -- curl -sL -u elastic:elasticelastic  http://elasticsearch-client:9200/_cat/nodes?v
-
-
+kubectl exec alpine -- curl -sL -u elastic:elasticelastic http://elasticsearch-client:9200/_cat/nodes?v
+```
+**Install Kibana**
+```
 helm install es-kibana   --version 7.8.1 elastic/kibana   --values es-7.8.1-values-secure-kibana.yaml
-
+```
 
 ---------------------------------------------------------------
-#### setup elastic with  security and ssl transport enabled
+### setup elastic with  security and ssl enabled
 
 kubectl create secret generic elastic-certificates --from-file=elastic-certificates.p12 
 
