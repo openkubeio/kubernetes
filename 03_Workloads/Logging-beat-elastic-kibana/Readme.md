@@ -34,6 +34,10 @@ kubectl exec alpine -- curl -sL http://elasticsearch-client:9200/_cat/nodes?v
 ```
 helm install es-kibana   --version 7.8.1 elastic/kibana   --values es-7.8.1-values-kibana.yaml
 ```
+**Test Kibana**
+```
+kubectl exec alpine -- curl -sL http://es-kibana-kibana:5601   
+```
 ---------------------------------------------
 
 ### setup elastic with user password enabled
@@ -63,6 +67,10 @@ kubectl exec alpine -- curl -sL -u elastic:elasticelastic http://elasticsearch-c
 **Install Kibana**
 ```
 helm install es-kibana   --version 7.8.1 elastic/kibana   --values es-7.8.1-values-secure-kibana.yaml
+```
+**Test Kibana**
+```
+kubectl exec alpine -- curl -sL -u elastic:elasticelastic http://es-kibana-kibana:5601   
 ```
 
 ---------------------------------------------------------------

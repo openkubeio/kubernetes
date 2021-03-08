@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd
+  namespace: kube-system
+  labels:
+    k8s-app: fluentd-logging
+    version: v1
+data:
+  fluent.conf: |
+    ## simple source to read all logs from var log containers 
+    ## and tag them to mongo.* to be consumed my mongo DB
+    ## for continous read pos_file should be in /var/log/cont_log.pos
+    ## <source>
+    ##   @type tail
+    ##   path /var/log/containers/*nginx*.log
+    ##   pos_file /etc/cont_log.pos
+    ##   # time_format "%Y-%m-%dT%H:%M:%S.%L%Z"
+    ##   keep_time_key true
+    ##   read_from_head true
+    ##   tag mongo.*
+    ##   format json
+    ## </source>
+    ## <filter mongo.**>
+    ##     @type record_transformer
+    ##     <record>
+    ##       host_param "sdcv"
+    ##     </record>
+    ## </filter>
+    ## 
+    ##
+    ## This goes for dluentd kubernetes docker image whats comes shipped with 
+    ## kubernetes filter plugin and parsers to records kubernetes updates like pod , node, and namespaces
+    @include kubernetes.conf
+    ##
+    <filter kubernetes.**>
+      @type record_transformer
+      remove_keys stream,$.kubernetes.master_url,$.kubernetes.namespace_id,$.kubernetes.container_image_id
+    </filter>
+    ##
+    <match kubernetes.**>
+      @type mongo
+      @log_level info
+      # host mongo-standalone.mongo.svc.cluster.local
+      # port 27017
+      # database admin
+      host "#{ENV['FLUENT_MONGO_HOST']}"
+      port "#{ENV['FLUENT_MONGO_PORT']}"
+      database "#{ENV['FLUENT_MONGO_DB']}"
+      collection kubernetes
+      #
+      # authentication
+      user "#{ENV['FLUENT_MONGO_USER']}"
+      password "#{ENV['FLUENT_MONGO_PASSWORD']}"
+      #
+      # flush
+      <buffer>
+        flush_interval 10s
+      </buffer>
+    </match>
+    ## <match mongo.**>
+    ##   @type mongo
+    ##   host mongo-standalone.mongo.svc.cluster.local
+    ##   port 27017
+    ##   database admin
+    ##   collection nginx
+    ##   
+    ##   # for capped collection
+    ##   capped
+    ##   capped_size 1024m
+    ##   
+    ##   # authentication
+    ##   user admin
+    ##   password password
+    ##   
+    ##   <inject>
+    ##     # key name of timestamp
+    ##     time_key time
+    ##   </inject>
+    ##   
+    ##   <buffer>
+    ##     # flush
+    ##     flush_interval 10s
+    ##   </buffer>
+    ## </match>
