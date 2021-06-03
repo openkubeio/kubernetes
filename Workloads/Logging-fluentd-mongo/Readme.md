@@ -31,6 +31,8 @@ Below are the link to the official fluentd-kubernetes-daemonset yamls and docker
 
 > https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.9/debian-forward
 > https://github.com/fluent/fluent-plugin-mongo
+> https://docs.fluentd.org/output/mongo#tag_mapped
+> https://docs.fluentd.org/output/rewrite_tag_filter
 
 
 

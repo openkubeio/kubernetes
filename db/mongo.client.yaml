@@ -64,6 +64,21 @@ spec:
         - containerPort: 3000
           name: mongoclient
           protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteMany
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: nfs-storageclass
 
 ---
 apiVersion: extensions/v1beta1

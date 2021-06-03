@@ -27,3 +27,7 @@ openssl x509 -req -in etc.kube.io.csr -CA rootCA.crt -CAkey rootCA.key -CAcreate
 
 Verify the certificate's content
 openssl x509 -in etc.kube.io.crt -text -noout
+
+https://github.com/vipin-k/How-to-setup-SSL-TLS-certificate-on-ingress-controller-for-Kubernetes-Cluster
+
+https://www.youtube.com/watch?v=7K0gAYmWWho
