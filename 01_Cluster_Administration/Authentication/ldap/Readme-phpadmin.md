@@ -16,8 +16,9 @@ helm pull cetic/phpldapadmin
 <br/><br/>
 
 > **Install Ldap Php Admin Helm Chart**
+
 ```
-helm install ldapphpadmin  phpldapadmin-0.1.4.tgz --values phpadmin.values.yaml
+helm install ldapphpadmin  charts/phpldapadmin-0.1.4.tgz --values values/phpadmin.values.yaml
 
 export PHPADMIN_POD=$(kubectl get pods -o custom-columns=:.metadata.name -l app=phpldapadmin)
 
@@ -26,4 +27,13 @@ export NODE_IP=$(kubectl get pod $PHPADMIN_POD -o jsonpath="{.status.hostIP}")
 export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services ldapphpadmin-phpldapadmin)
 
 echo http://$NODE_IP:$NODE_PORT
+
+kubectl port-forward svc/ldapphpadmin-phpldapadmin 8080:80
+
 ```
+
+<br/><br/>
+
+> **Login the php ldap console**
+
+login with DN  cn=admin,dc=openkube,dc=org and password $LDAP_ADMIN_PASSWORD

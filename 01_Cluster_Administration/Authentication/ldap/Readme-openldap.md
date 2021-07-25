@@ -19,7 +19,7 @@ helm pull stable/openldap
 
 > **Install Openlap Helm Chart**
 ```
-helm install my-ldap  openldap-1.2.7.tgz --values ldap.values.yaml
+helm install my-ldap  charts/openldap-1.2.7.tgz --values values/ldap.values.yaml
 ```
 
 <br/><br/>
@@ -32,63 +32,65 @@ LDAP_CONFIG_PASSWORD=$(kubectl get secret --namespace default my-ldap-openldap -
 
 LDAP_HOST=ldap://my-ldap-openldap.default.svc.cluster.local:389
 
-kubectl run alpine --image=openkubeio/alpine-openldap-client --restart=Always --env="LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" --env="LDAP_CONFIG_PASSWORD=$LDAP_CONFIG_PASSWORD"
+kubectl run alpine --generator=run-pod/v1 --image=openkubeio/alpine-openldap-client --restart=Always --env="LDAP_HOST=$LDAP_HOST"  --env="LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" --env="LDAP_CONFIG_PASSWORD=$LDAP_CONFIG_PASSWORD"
 
-kubectl exec alpine -- ldapsearch -x -H $LDAP_HOST -b dc=openkube,dc=org -D "cn=admin,dc=openkube,dc=org" -w $LDAP_ADMIN_PASSWORD
+kubectl exec alpine -- ldapsearch  -H $LDAP_HOST -b dc=openkube,dc=org -D "cn=admin,dc=openkube,dc=org" -w $LDAP_ADMIN_PASSWORD -x
+
 ```
 
 <br/><br/>
 
-> **Add User**
-```
-LDAP_POD=$(kubectl get pods -o custom-columns=:.metadata.name -l app=openldap)
+> **Add Users and Groups with ldif file**
 
-kubectl exec -it $LDAP_POD -- slappasswd -h {SSHA}
-New password:
-Re-enter new password:
-{SSHA}NMiqcWPcpSQ49n3d6ICPh9R4FsjoNTgD
 ```
-```
-cat > user1.ldif << EOL
-dn: cn=john,dc=openkube,dc=org
-uid: OK353524
-cn: johnmiller
-sn: john
-objectClass: top
-objectClass: posixAccount
-objectClass: inetOrgPerson
-loginShell: /bin/bash
-homeDirectory: /home/john
-uidNumber: 35352400
-gidNumber: 14564100
-userPassword: {SSHA}NMiqcWPcpSQ49n3d6ICPh9R4FsjoNTgD
-mail: johnmiller@myorg.org
-gecos: John Miller
-EOL
+kubectl cp soa.openkube.org.ldif  alpine:/soa.openkube.org.ldif
 
-kubectl exec alpine -- ldapadd -x -H $LDAP_HOST -D "cn=admin,dc=openkube,dc=org" -f user1.ldif -w $LDAP_ADMIN_PASSWORD
+kubectl exec alpine -- ldapadd -x -H $LDAP_HOST -D "cn=admin,dc=openkube,dc=org" -w $LDAP_ADMIN_PASSWORD -f /soa.openkube.org.ldif
 
-kubectl exec alpine -- ldapsearch -x -H $LDAP_HOST -D "cn=admin,dc=openkube,dc=org" -w $LDAP_ADMIN_PASSWORD -b dc=openkube,dc=org "(&(objectClass=top)(uid=OK353524))"
 ```
 
 <br/><br/>
 
-> **Update password**
+> **Serach and validate  Users and Groups**
+
+```
+kubectl exec alpine -- ldapsearch  -H $LDAP_HOST -D "cn=admin,dc=openkube,dc=org" -b dc=soa,dc=openkube,dc=org -w $LDAP_ADMIN_PASSWORD -x 
+
+kubectl exec alpine -- ldapsearch  -H $LDAP_HOST -D "cn=admin,dc=openkube,dc=org" -b ou=Groups,dc=soa,dc=openkube,dc=org -w $LDAP_ADMIN_PASSWORD -x 
+
+kubectl exec alpine -- ldapsearch  -H $LDAP_HOST -D "cn=admin,dc=openkube,dc=org" -b ou=Users,dc=soa,dc=openkube,dc=org -w $LDAP_ADMIN_PASSWORD -x  "(&(objectclass=*))" +
+
+```
+
+<br/><br/>
+
+> **Generate hashed password for User**
+
 ```
 LDAP_POD=$(kubectl get pods -o custom-columns=:.metadata.name -l app=openldap)
 
 kubectl exec -it $LDAP_POD -- slappasswd -h {SSHA}
+
 New password:
 Re-enter new password:
 {SSHA}NMiqcWPcpSQ49n3d6ICPh9R4FsjoNTgD
 ```
+
+
+<br/><br/>
+
+> **Update password for a user with ldif file**
 ```
+
+kubectl exec -it alpine -- sh
+
 cat > updatepasswd.ldif << EOL
-dn: cn=john,dc=openkube,dc=org
+dn: cn=SOA2007,ou=Users,dc=soa,dc=openkube,dc=org
 changetype: modify
-replace: userPassword
-userPassword: {SSHA}NMiqcWPcpSQ49n3d6ICPh9R4FsjoNTgD
+replace: userpassword
+userpassword: {SSHA}NMiqcWPcpSQ49n3d6ICPh9R4FsjoNTgD
 EOL
 
-kubectl exec alpine -- ldapmodify -x -H $LDAP_HOST -D "cn=admin,dc=openkube,dc=org" -w $LDAP_ADMIN_PASSWORD -f updatepasswd.ldif
+ldapmodify -x -H $LDAP_HOST -D "cn=admin,dc=openkube,dc=org" -w $LDAP_ADMIN_PASSWORD -f updatepasswd.ldif
+
 ```
